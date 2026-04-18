@@ -1,0 +1,102 @@
+/* Layout Styles */
+.layout {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  background-color: var(--primary-light);
+  gap: 0;
+}
+
+.layout-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+.topbar {
+  background-color: white;
+  padding: 20px 30px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.topbar-left h1 {
+  margin: 0;
+  font-size: 24px;
+  color: var(--text-dark);
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.user-info {
+  font-size: 14px;
+  color: var(--text-light);
+}
+
+.layout-content {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Scrollbar styling */
+.layout-main::-webkit-scrollbar,
+.layout-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.layout-main::-webkit-scrollbar-track,
+.layout-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.layout-main::-webkit-scrollbar-thumb,
+.layout-content::-webkit-scrollbar-thumb {
+  background: #D0D0D0;
+  border-radius: 4px;
+}
+
+.layout-main::-webkit-scrollbar-thumb:hover,
+.layout-content::-webkit-scrollbar-thumb:hover {
+  background: #B0B0B0;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .layout-main {
+    padding: 20px;
+  }
+
+  .topbar {
+    padding: 15px 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+  }
+
+  .layout-main {
+    padding: 15px;
+  }
+
+  .topbar {
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    flex-direction: column;
+    gap: 15px;
+  }
+}
+

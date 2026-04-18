@@ -1,0 +1,31 @@
+.score-card {
+  text-align: center;
+}
+
+.score-card h3 {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.score-card p {
+  font-size: 14px;
+  color: var(--text-light);
+}
+
+.trend {
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 12px;
+  padding: 6px 8px;
+  border-radius: 6px;
+}
+
+.trend.positive {
+  background-color: #D4EDDA;
+  color: #155724;
+}
+
+.trend.negative {
+  background-color: #F8D7DA;
+  color: #721C24;
+}

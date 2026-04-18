@@ -1,0 +1,32 @@
+.emp-page { padding: 8px; }
+.emp-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.emp-sub { opacity: 0.7; margin-top: 4px; }
+
+.emp-primary {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #d9d9d9;
+  background: white;
+  cursor: pointer;
+}
+
+.emp-filters { display: flex; gap: 12px; align-items: center; margin: 16px 0; flex-wrap: wrap; }
+.emp-input, .emp-select {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #d9d9d9;
+}
+
+.emp-table-wrap { background: white; border-radius: 14px; overflow: hidden; border: 1px solid #eee; }
+.emp-table { width: 100%; border-collapse: collapse; }
+.emp-table th, .emp-table td { padding: 12px; border-bottom: 1px solid #f2f2f2; text-align: left; }
+.emp-actions { display: flex; gap: 8px; }
+.emp-btn { padding: 6px 10px; border-radius: 8px; border: 1px solid #ddd; background: #fff; cursor: pointer; }
+.emp-btn.danger { border-color: #ffcccc; }
+.emp-empty { padding: 16px; text-align: center; }
+
+.emp-actions{
+  display: flex;
+  gap: 10px;          /* spacing */
+  align-items: center;
+}

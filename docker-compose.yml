@@ -1,0 +1,79 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: oms2-postgres
+    environment:
+      POSTGRES_DB: oms2
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d oms2"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  backend:
+    build:
+      context: ./backend
+    container_name: oms2-backend
+    environment:
+      SERVER_HOST: 0.0.0.0
+      SERVER_PORT: 8081
+      ENV: development
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: oms2
+      DB_SSLMODE: disable
+      JWT_SECRET_KEY: oms2-dev-secret
+      JWT_EXPIRY_HOURS: 24
+      RAG_ENGINE_URL: http://rag:8085
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8081:8081"
+
+  rag:
+    build:
+      context: ./rag-kpi-engine
+    container_name: oms2-rag
+    environment:
+      APP_PORT: 8085
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/oms2?sslmode=disable
+      HF_MODEL_ID: sentence-transformers/all-MiniLM-L6-v2
+      HF_API_TOKEN: ${HF_API_TOKEN:-}
+      HF_TIMEOUT_SECONDS: 30
+      EMBEDDING_DIM: 128
+      RAG_TOPK: 10
+      RAG_CACHE_TTL_SECONDS: 300
+      CHUNK_MIN_WORDS: 80
+      CHUNK_MAX_WORDS: 220
+      WIKI_REGEN_INTERVAL_SECONDS: 30
+      ENABLE_RERANK: "true"
+      ENABLE_SEARCH_CACHE: "true"
+      ENABLE_KPI_INSIGHTS: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8085:8085"
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: oms2-frontend
+    depends_on:
+      - backend
+      - rag
+    ports:
+      - "3000:80"
+
+volumes:
+  postgres_data:

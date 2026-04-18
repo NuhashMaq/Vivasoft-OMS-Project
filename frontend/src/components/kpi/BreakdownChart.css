@@ -1,0 +1,9 @@
+.breakdown-chart h4 {
+  margin-bottom: 16px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.breakdown-chart .recharts-surface {
+  margin: 0 auto;
+}

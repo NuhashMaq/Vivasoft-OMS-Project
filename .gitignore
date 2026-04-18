@@ -1,0 +1,5 @@
+.venv/
+.vscode/
+*.log
+*.tmp
+AI_PM_SRS_Final.txt
