@@ -58,8 +58,8 @@ export const KpiPage: React.FC = () => {
 
   if (error) {
     return (
-      <div className="kpi-page">
-        <h1>KPI Dashboard</h1>
+      <div className="kpi-page page-shell">
+        <h1 className="page-title">KPI Dashboard</h1>
         <div className="error-message">
           Failed to load KPI data: {error}
         </div>
@@ -69,16 +69,19 @@ export const KpiPage: React.FC = () => {
 
   if (!kpiData) {
     return (
-      <div className="kpi-page">
-        <h1>KPI Dashboard</h1>
-        <p>No data available</p>
+      <div className="kpi-page page-shell">
+        <h1 className="page-title">KPI Dashboard</h1>
+        <p className="muted">No KPI data available.</p>
       </div>
     );
   }
 
   return (
-    <div className="kpi-page">
-      <h1>KPI Dashboard</h1>
+    <div className="kpi-page page-shell">
+      <div>
+        <h1 className="page-title">KPI Dashboard</h1>
+        <p className="page-subtitle">AI-generated performance breakdown sourced from RAG telemetry and task lifecycle signals.</p>
+      </div>
 
       <div className="kpi-summary">
         {kpiData.summary?.map(item => (
