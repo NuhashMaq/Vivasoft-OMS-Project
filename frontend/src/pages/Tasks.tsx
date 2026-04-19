@@ -21,67 +21,44 @@ export const Tasks: React.FC = () => {
 
   if (loadingProjects) {
     return (
-      <div style={{ padding: '40px', textAlign: 'center', color: '#666' }}>
-        Loading Workspace...
+      <div className="panel">
+        <p className="muted">Loading task workspace...</p>
       </div>
     );
   }
 
   return (
-    <div className="tasks-page">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+    <div className="page-shell">
+      <div className="page-headline">
         <div>
-          <h2 style={{ margin: '0 0 5px 0' }}>Task Management</h2>
-          <p style={{ color: '#666', margin: 0, fontSize: '14px' }}>
-            Track your personal and team progress
+          <h2 className="page-title">Task Command Center</h2>
+          <p className="page-subtitle">
+            Drag tasks through delivery stages, inspect history, and keep execution transparent.
           </p>
         </div>
       </div>
 
-      <div style={{
-        background: '#fff',
-        padding: '20px',
-        borderRadius: '8px',
-        border: '1px solid #ddd',
-        marginBottom: '20px'
-      }}>
-        <label style={{ display: 'block', marginBottom: '10px', fontWeight: '600', fontSize: '14px' }}>
-          Active Project
-        </label>
+      <section className="panel">
+        <label className="kpi-label" style={{ marginBottom: 6, display: 'inline-block' }}>Active Project</label>
         <select
+          className="field-select"
           value={selectedProjectId}
           onChange={(e) => setSelectedProjectId(e.target.value)}
-          style={{
-            width: '100%',
-            padding: '10px',
-            borderRadius: '6px',
-            border: '1px solid #ccc',
-            outline: 'none',
-            fontSize: '14px'
-          }}
         >
           <option value="">Select a project to view tasks...</option>
           {projects?.map(project => (
             <option key={project.id} value={project.id}>{project.name}</option>
           ))}
         </select>
-      </div>
+      </section>
 
       {selectedProjectId ? (
         <ProjectTaskBoard projectId={selectedProjectId} />
       ) : (
-        <div style={{
-          padding: '60px',
-          textAlign: 'center',
-          background: '#f9f9f9',
-          borderRadius: '8px',
-          border: '1px solid #ddd',
-          color: '#666'
-        }}>
-          <div style={{ fontSize: '48px', marginBottom: '20px' }}>📋</div>
-          <h3>Initialize Viewport</h3>
-          <p>Please select a project from the dropdown above to manage its tasks.</p>
-        </div>
+        <section className="panel">
+          <h3 className="panel-title">Select a project to open kanban board</h3>
+          <p className="muted">The board will show To Do, In Progress, and Done columns with drag-and-drop updates.</p>
+        </section>
       )}
     </div>
   );
