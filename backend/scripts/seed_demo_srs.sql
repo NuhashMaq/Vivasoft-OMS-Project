@@ -318,3 +318,43 @@ WITH task_seed(project_name, title, description, status_name, assignee_email, de
         ts.started_days,
         ts.completed_days
     FROM task_seed ts
+    JOIN projects p ON p.name = ts.project_name AND p.deleted_at IS NULL
+    JOIN employees e ON e.email = ts.assignee_email AND e.deleted_at IS NULL
+)
+UPDATE tasks t
+SET
+    description = r.description,
+    deadline = (CURRENT_DATE + (r.deadline_days || ' days')::interval),
+    status = r.status_name,
+    assignee_id = r.assignee_id,
+    updated_at = NOW(),
+    started_at = CASE
+        WHEN r.status_name IN ('In Progress', 'Done') THEN COALESCE(t.started_at, NOW() - (r.started_days || ' days')::interval)
+        ELSE NULL
+    END,
+    completed_at = CASE
+        WHEN r.status_name = 'Done' THEN COALESCE(t.completed_at, NOW() - (r.completed_days || ' days')::interval)
+        ELSE NULL
+    END
+FROM resolved r
+WHERE t.project_id = r.project_id
+  AND t.title = r.title;
+
+WITH task_seed(project_name, title, description, status_name, assignee_email, deadline_days, started_days, completed_days) AS (
+    VALUES
+        ('OMS2 Platform Revamp', 'Backlog grooming for Q2 epics', 'Prepare prioritized backlog and acceptance criteria for Q2 epics.', 'To Do', 'demo.employee.01@oms2.local', 8, 0, 0),
+        ('OMS2 Platform Revamp', 'Implement role-based sidebar navigation', 'Deliver role-aware workspace navigation and permissions mapping.', 'In Progress', 'demo.employee.02@oms2.local', 6, 4, 0),
+        ('OMS2 Platform Revamp', 'Migrate dashboard KPIs to API contracts', 'Replace static KPI metrics with backend-driven summaries.', 'Done', 'demo.employee.03@oms2.local', -2, 9, 2),
+        ('OMS2 Platform Revamp', 'Stabilize task status transition audit logs', 'Ensure every status transition writes a traceable audit entry.', 'In Progress', 'demo.employee.04@oms2.local', 9, 3, 0),
+        ('OMS2 Platform Revamp', 'Build attendance analytics widgets', 'Add attendance scorecards and distribution metrics for managers.', 'To Do', 'demo.employee.05@oms2.local', 11, 0, 0),
+        ('OMS2 Platform Revamp', 'Write regression suite for auth flows', 'Automate login/session/logout regression checks.', 'Done', 'demo.employee.06@oms2.local', -1, 7, 1),
+
+        ('Client Onboarding Portal', 'Design onboarding checklist workflow', 'Create onboarding stage definitions and handoff criteria.', 'To Do', 'demo.employee.07@oms2.local', 10, 0, 0),
+        ('Client Onboarding Portal', 'Integrate client profile approval service', 'Wire approvals into profile activation and risk checks.', 'In Progress', 'demo.employee.08@oms2.local', 7, 3, 0),
+        ('Client Onboarding Portal', 'Create welcome email automation templates', 'Finalize email templates and trigger events for launch.', 'Done', 'demo.employee.09@oms2.local', -3, 10, 3),
+        ('Client Onboarding Portal', 'Configure SLA escalation matrix', 'Define incident escalations and breach response ownership.', 'In Progress', 'demo.employee.10@oms2.local', 5, 2, 0),
+        ('Client Onboarding Portal', 'Build document upload policy validation', 'Add policy checks for document format and compliance rules.', 'To Do', 'demo.employee.11@oms2.local', 12, 0, 0),
+        ('Client Onboarding Portal', 'Demo dry-run with mock tenant', 'Run end-to-end onboarding rehearsal with demo data.', 'Done', 'demo.employee.12@oms2.local', -1, 8, 1),
+
+        ('RAG KPI Insights Rollout', 'Index historical updates for retrieval', 'Backfill chunk index with historical project updates.', 'In Progress', 'demo.employee.13@oms2.local', 6, 5, 0),
+        ('RAG KPI Insights Rollout', 'Implement semantic wiki regeneration job', 'Regenerate project wiki from retrieved context snapshots.', 'To Do', 'demo.employee.14@oms2.local', 9, 0, 0),
