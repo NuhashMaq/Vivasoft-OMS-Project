@@ -38,3 +38,43 @@ WITH demo_people(idx, first_name, last_name, designation, department) AS (
     VALUES
         (1,  'Amina',  'Rahman',  'Software Engineer',      'Engineering'),
         (2,  'Fahim',  'Islam',   'QA Engineer',            'Engineering'),
+        (3,  'Nabila', 'Sultana', 'Product Analyst',        'Product'),
+        (4,  'Rafi',   'Hasan',   'DevOps Engineer',        'Operations'),
+        (5,  'Tania',  'Kabir',   'Frontend Engineer',      'Engineering'),
+        (6,  'Sabbir', 'Ahmed',   'Backend Engineer',       'Engineering'),
+        (7,  'Mehjabeen','Noor',  'Project Coordinator',    'PMO'),
+        (8,  'Rakib',  'Hossain', 'Business Analyst',       'Product'),
+        (9,  'Shaila', 'Jahan',   'UX Designer',            'Design'),
+        (10, 'Nayeem', 'Karim',   'Support Engineer',       'Operations'),
+        (11, 'Farzana','Chowdhury','Data Analyst',          'Analytics'),
+        (12, 'Morshed','Alam',    'Security Engineer',      'Operations'),
+        (13, 'Tahsin', 'Arefin',  'Mobile Engineer',        'Engineering'),
+        (14, 'Jui',    'Akter',   'Scrum Master',           'PMO'),
+        (15, 'Sadia',  'Parvin',  'Technical Writer',       'Product'),
+        (16, 'Nafis',  'Haque',   'Platform Engineer',      'Engineering'),
+        (17, 'Elina',  'Sarker',  'QA Automation Engineer', 'Engineering'),
+        (18, 'Adnan',  'Faruq',   'KPI Specialist',         'Analytics'),
+        (19, 'Maliha', 'Yasmin',  'HR Associate',           'People Ops'),
+        (20, 'Irfan',  'Zaman',   'Operations Executive',   'Operations')
+), normalized AS (
+    SELECT
+        dp.idx,
+        dp.first_name,
+        dp.last_name,
+        dp.designation,
+        dp.department,
+        format('demo.employee.%s@oms2.local', lpad(dp.idx::text, 2, '0')) AS email,
+        format('+8801701%04s', dp.idx) AS phone,
+        (CURRENT_DATE - ((dp.idx * 11) || ' days')::interval)::date AS joining_date,
+        CASE WHEN dp.idx IN (19, 20) THEN 'inactive' ELSE 'active' END AS emp_status
+    FROM demo_people dp
+)
+INSERT INTO users (first_name, last_name, email, password, role, is_active, created_at, updated_at, deleted_at)
+SELECT
+    n.first_name,
+    n.last_name,
+    n.email,
+    crypt('password', gen_salt('bf')),
+    'user',
+    TRUE,
+    NOW() - INTERVAL '20 days',
