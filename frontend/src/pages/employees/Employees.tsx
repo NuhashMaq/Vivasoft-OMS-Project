@@ -1,160 +1,156 @@
-import { useMemo, useState } from "react";
-import type { Employee } from "../../types/employee";
-import { EmployeeFilter } from "./components/EmployeeFilter";
-import { EmployeeTable } from "./components/EmployeeTable";
-import { EmployeeForm } from "./components/EmployeeForm";
+import React from 'react';
+import { useEmployees } from '../../hooks/useEmployees';
 
-export const Employees = () => {
-  // ✅ 1) employees array -> state
-  const [employees, setEmployees] = useState<Employee[]>([
-    {
-      id: "1",
-      name: "Arpita Karmakar",
-      email: "arpita@example.com",
-      department: "Engineering",
-      role: "Developer",
-      status: "Active",
-    },
-    {
-      id: "2",
-      name: "Hasan Rahman",
-      email: "hasan@example.com",
-      department: "HR",
-      role: "HR Executive",
-      status: "Active",
-    },
-    {
-      id: "3",
-      name: "Nadia Islam",
-      email: "nadia@example.com",
-      department: "Finance",
-      role: "Accountant",
-      status: "Inactive",
-    },
-    {
-      id: "4",
-      name: "Siam Ahmed",
-      email: "siam@example.com",
-      department: "Engineering",
-      role: "QA",
-      status: "Active",
-    },
-  ]);
+const statusChipClass = (status: string): string =>
+  status === 'inactive' ? 'chip chip-status-hold' : 'chip chip-status-active';
 
-  // filters state
-  const [search, setSearch] = useState("");
-  const [department, setDepartment] = useState("");
-  const [status, setStatus] = useState("");
+export const Employees: React.FC = () => {
+  const { data, isLoading, isError } = useEmployees();
 
-  // ✅ 2) modal state
-  const [formOpen, setFormOpen] = useState(false);
-  const [formMode, setFormMode] = useState<"create" | "edit">("create");
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [search, setSearch] = React.useState('');
+  const [departmentFilter, setDepartmentFilter] = React.useState('all');
+  const [statusFilter, setStatusFilter] = React.useState('all');
 
-  const departments = useMemo(
-    () => Array.from(new Set(employees.map((e) => e.department))).sort(),
-    [employees]
+  const rows = data?.rows || [];
+
+  const departments = React.useMemo(
+    () => Array.from(new Set(rows.map((row) => row.department).filter(Boolean))).sort(),
+    [rows]
   );
 
-  const filteredEmployees = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    return employees.filter((e) => {
-      const matchSearch =
-        !q || e.name.toLowerCase().includes(q) || e.email.toLowerCase().includes(q);
-      const matchDept = !department || e.department === department;
-      const matchStatus = !status || e.status === status;
-      return matchSearch && matchDept && matchStatus;
+  const filtered = React.useMemo(() => {
+    const query = search.trim().toLowerCase();
+    return rows.filter((employee) => {
+      const matchesSearch =
+        !query ||
+        employee.full_name.toLowerCase().includes(query) ||
+        employee.email.toLowerCase().includes(query) ||
+        employee.designation.toLowerCase().includes(query);
+
+      const matchesDepartment = departmentFilter === 'all' || employee.department === departmentFilter;
+      const matchesStatus = statusFilter === 'all' || employee.status === statusFilter;
+      return matchesSearch && matchesDepartment && matchesStatus;
     });
-  }, [employees, search, department, status]);
+  }, [rows, search, departmentFilter, statusFilter]);
 
-  // ✅ Add click -> open modal (create)
-  const onAdd = () => {
-    setFormMode("create");
-    setSelectedEmployee(null);
-    setFormOpen(true);
-  };
+  const metrics = React.useMemo(() => {
+    const total = rows.length;
+    const active = rows.filter((row) => row.status === 'active').length;
+    const inactive = rows.filter((row) => row.status === 'inactive').length;
+    return { total, active, inactive, departments: departments.length };
+  }, [rows, departments.length]);
 
-  // ✅ Edit click -> open modal + initial data
-  const onEdit = (emp: Employee) => {
-    setFormMode("edit");
-    setSelectedEmployee(emp);
-    setFormOpen(true);
-  };
+  if (isLoading) {
+    return (
+      <div className="panel">
+        <p className="muted">Loading employees...</p>
+      </div>
+    );
+  }
 
-  // ✅ Delete confirm -> ok হলে remove from state
-  const onDelete = (emp: Employee) => {
-    const ok = window.confirm(`Are you sure you want to delete ${emp.name}?`);
-    if (!ok) return;
-
-    setEmployees((prev) => prev.filter((e) => e.id !== emp.id));
-  };
-
-  const onDetails = (emp: Employee) => {
-    window.alert(`Employee: ${emp.name}\nEmail: ${emp.email}\nDepartment: ${emp.department}\nRole: ${emp.role}`);
-  };
-
-  // ✅ Form submit -> state update (create/edit)
-  const onSubmitForm = (data: Omit<Employee, "id">) => {
-    if (formMode === "create") {
-      const newEmp: Employee = {
-        id: crypto.randomUUID(), // modern browsers
-        ...data,
-      };
-      setEmployees((prev) => [newEmp, ...prev]);
-    } else {
-      // edit mode
-      if (!selectedEmployee) return;
-
-      setEmployees((prev) =>
-        prev.map((e) => (e.id === selectedEmployee.id ? { ...e, ...data } : e))
-      );
-    }
-
-    // close modal
-    setFormOpen(false);
-    setSelectedEmployee(null);
-    setFormMode("create");
-  };
-
-  const onCloseForm = () => {
-    setFormOpen(false);
-    setSelectedEmployee(null);
-    setFormMode("create");
-  };
+  if (isError) {
+    return (
+      <div className="panel">
+        <p className="muted">Failed to load employee directory.</p>
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+    <div className="page-shell">
+      <div className="page-headline">
         <div>
-          <h2>Employee Directory</h2>
-          <p style={{ opacity: 0.7 }}>Manage employees (FE2)</p>
+          <h2 className="page-title">Employee Directory</h2>
+          <p className="page-subtitle">
+            Review staffing, department distribution, and active-assignee readiness for task allocation.
+          </p>
         </div>
-
-        <button onClick={onAdd} style={{ padding: "10px 14px" }}>
-          + Add Employee
-        </button>
       </div>
 
-      <EmployeeFilter
-        search={search}
-        onSearchChange={setSearch}
-        department={department}
-        onDepartmentChange={setDepartment}
-        status={status}
-        onStatusChange={setStatus}
-        departments={departments}
-      />
+      <section className="kpi-strip stagger">
+        <article className="kpi-card">
+          <p className="kpi-label">Total Employees</p>
+          <p className="kpi-value">{metrics.total}</p>
+          <p className="kpi-foot">Across {metrics.departments} departments</p>
+        </article>
+        <article className="kpi-card">
+          <p className="kpi-label">Active</p>
+          <p className="kpi-value">{metrics.active}</p>
+          <p className="kpi-foot">Ready for assignment</p>
+        </article>
+        <article className="kpi-card">
+          <p className="kpi-label">Inactive</p>
+          <p className="kpi-value">{metrics.inactive}</p>
+          <p className="kpi-foot">Blocked from new tasks</p>
+        </article>
+      </section>
 
-      <EmployeeTable employees={filteredEmployees} onDetails={onDetails} onEdit={onEdit} onDelete={onDelete} />
+      <section className="panel">
+        <div className="controls-row">
+          <input
+            className="field"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search by name, email, or designation"
+          />
+          <select
+            className="field-select"
+            value={departmentFilter}
+            onChange={(event) => setDepartmentFilter(event.target.value)}
+          >
+            <option value="all">All departments</option>
+            {departments.map((department) => (
+              <option key={department} value={department}>
+                {department}
+              </option>
+            ))}
+          </select>
+          <select
+            className="field-select"
+            value={statusFilter}
+            onChange={(event) => setStatusFilter(event.target.value)}
+          >
+            <option value="all">All status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+      </section>
 
-      {/* ✅ Modal */}
-      <EmployeeForm
-        open={formOpen}
-        mode={formMode}
-        initial={selectedEmployee}
-        onClose={onCloseForm}
-        onSubmit={onSubmitForm}
-      />
+      <section className="panel data-table-wrap">
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Department</th>
+              <th>Designation</th>
+              <th>Joining Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map((employee) => (
+              <tr key={employee.id}>
+                <td>{employee.full_name}</td>
+                <td>{employee.email || '-'}</td>
+                <td>{employee.department || '-'}</td>
+                <td>{employee.designation || '-'}</td>
+                <td>{employee.joining_date ? employee.joining_date.slice(0, 10) : '-'}</td>
+                <td>
+                  <span className={statusChipClass(employee.status)}>{employee.status}</span>
+                </td>
+              </tr>
+            ))}
+
+            {filtered.length === 0 && (
+              <tr>
+                <td colSpan={6} className="muted">No employees matched your filters.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </section>
     </div>
   );
 };
