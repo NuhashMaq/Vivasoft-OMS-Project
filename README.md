@@ -63,13 +63,13 @@ Suggested live walkthrough:
 ## System Architecture
 
 ```mermaid
-flowchart LR
-   U[Browser User] --> FE[Frontend: React + Vite + Nginx]
-   FE -->|/api| BE[Backend API: Gin + GORM]
-   FE -->|/rag| RAG[RAG KPI Engine: Go]
-   BE --> DB[(PostgreSQL + pgvector)]
+graph LR
+   U[Browser User] --> FE[Frontend React Vite Nginx]
+   FE -->|API| BE[Backend API Gin GORM]
+   FE -->|RAG API| RAG[RAG KPI Engine Go]
+   BE --> DB[(PostgreSQL pgvector)]
    RAG --> DB
-   BE -->|indexing and task status events| RAG
+   BE -->|Task status events| RAG
 ```
 
 ### Request and Data Flow
@@ -83,16 +83,16 @@ sequenceDiagram
    participant RAG
 
    User->>Frontend: Open Tasks board
-   Frontend->>Backend: GET /api/v1/projects/:id/tasks
+   Frontend->>Backend: Get project tasks by project id
    Backend->>DB: Query tasks + metadata
    DB-->>Backend: Task rows
    Backend-->>Frontend: JSON response
    Frontend-->>User: Render Kanban board
 
    User->>Frontend: Mark task as Done
-   Frontend->>Backend: PATCH /api/v1/tasks/:id/status
+   Frontend->>Backend: Update task status
    Backend->>DB: Update task + status log
-   Backend->>RAG: POST /v1/tasks/status-changed
+   Backend->>RAG: Send task status changed event
    RAG->>DB: Mark wiki state stale
    Backend-->>Frontend: Updated task payload
 ```
@@ -109,7 +109,7 @@ The backend follows a layered flow:
 - `model` -> schema and request/response primitives
 
 ```mermaid
-flowchart TB
+graph TB
    H[Handler Layer] --> S[Service Layer]
    S --> R[Repository Layer]
    R --> M[(PostgreSQL)]
