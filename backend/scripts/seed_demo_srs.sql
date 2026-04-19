@@ -678,3 +678,53 @@ SELECT
     mt.project_id,
     'task_update',
     format('Progress updated for "%s" with latest execution notes.', mt.title),
+    '',
+    '',
+    NULL,
+    NULL,
+    NOW() - INTERVAL '1 day',
+    NOW()
+FROM mapped_task mt
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM daily_update_items di
+    WHERE di.daily_update_id = mt.daily_update_id
+      AND di.action = 'task_update'
+);
+
+COMMIT;
+
+-- Verification snapshot
+SELECT 'users_total' AS metric, COUNT(*)::text AS value FROM users
+UNION ALL
+SELECT 'employees_total', COUNT(*)::text FROM employees
+UNION ALL
+SELECT 'demo_employee_users', COUNT(*)::text FROM users WHERE email LIKE 'demo.employee.%@oms2.local'
+UNION ALL
+SELECT 'demo_employee_records', COUNT(*)::text FROM employees WHERE email LIKE 'demo.employee.%@oms2.local'
+UNION ALL
+SELECT 'projects_total', COUNT(*)::text FROM projects
+UNION ALL
+SELECT 'seeded_projects', COUNT(*)::text FROM projects WHERE name IN (
+    'OMS2 Platform Revamp',
+    'Client Onboarding Portal',
+    'RAG KPI Insights Rollout',
+    'Mobile Timesheet Pilot',
+    'Internal Automation Hub'
+)
+UNION ALL
+SELECT 'seeded_tasks', COUNT(*)::text FROM tasks WHERE title IN (
+    'Backlog grooming for Q2 epics',
+    'Implement role-based sidebar navigation',
+    'Migrate dashboard KPIs to API contracts',
+    'Stabilize task status transition audit logs',
+    'Build attendance analytics widgets',
+    'Write regression suite for auth flows',
+    'Design onboarding checklist workflow',
+    'Integrate client profile approval service',
+    'Create welcome email automation templates',
+    'Configure SLA escalation matrix',
+    'Build document upload policy validation',
+    'Demo dry-run with mock tenant',
+    'Index historical updates for retrieval',
+    'Implement semantic wiki regeneration job',
