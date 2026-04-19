@@ -118,3 +118,43 @@ WITH demo_people(idx, first_name, last_name, designation, department) AS (
         dp.idx,
         dp.first_name,
         dp.last_name,
+        dp.designation,
+        dp.department,
+        format('demo.employee.%s@oms2.local', lpad(dp.idx::text, 2, '0')) AS email,
+        format('+8801701%04s', dp.idx) AS phone,
+        (CURRENT_DATE - ((dp.idx * 11) || ' days')::interval)::date AS joining_date,
+        CASE WHEN dp.idx IN (19, 20) THEN 'inactive' ELSE 'active' END AS emp_status
+    FROM demo_people dp
+)
+INSERT INTO employees (first_name, last_name, email, phone, designation, department, joining_date, status, created_at, updated_at, deleted_at)
+SELECT
+    n.first_name,
+    n.last_name,
+    n.email,
+    n.phone,
+    n.designation,
+    n.department,
+    n.joining_date,
+    n.emp_status,
+    NOW() - INTERVAL '20 days',
+    NOW(),
+    NULL
+FROM normalized n
+ON CONFLICT (email)
+DO UPDATE SET
+    first_name = EXCLUDED.first_name,
+    last_name = EXCLUDED.last_name,
+    phone = EXCLUDED.phone,
+    designation = EXCLUDED.designation,
+    department = EXCLUDED.department,
+    joining_date = EXCLUDED.joining_date,
+    status = EXCLUDED.status,
+    updated_at = NOW(),
+    deleted_at = NULL;
+
+WITH demo_projects(project_name, short_description, start_date, end_date, status_name, project_type) AS (
+    VALUES
+        ('OMS2 Platform Revamp', 'Modernize project operations UI, workflows, and reporting integration.', CURRENT_DATE - INTERVAL '70 days', CURRENT_DATE + INTERVAL '120 days', 'Active', 'Internal'),
+        ('Client Onboarding Portal', 'Deliver structured onboarding lifecycle for enterprise clients.', CURRENT_DATE - INTERVAL '45 days', CURRENT_DATE + INTERVAL '95 days', 'Active', 'Client'),
+        ('RAG KPI Insights Rollout', 'Operationalize retrieval, wiki regeneration, and KPI visibility.', CURRENT_DATE - INTERVAL '55 days', CURRENT_DATE + INTERVAL '110 days', 'Active', 'R&D'),
+        ('Mobile Timesheet Pilot', 'Pilot mobile-first timesheet capture for distributed field teams.', CURRENT_DATE - INTERVAL '30 days', CURRENT_DATE + INTERVAL '75 days', 'On Hold', 'Internal'),
