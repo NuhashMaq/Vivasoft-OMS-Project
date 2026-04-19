@@ -238,3 +238,43 @@ WITH role_seed(project_name, email, role_name) AS (
         ('Client Onboarding Portal', 'demo.employee.06@oms2.local', 'viewer'),
         ('RAG KPI Insights Rollout', 'superadmin@oms2.local', 'owner'),
         ('RAG KPI Insights Rollout', 'demo.employee.07@oms2.local', 'editor'),
+        ('RAG KPI Insights Rollout', 'demo.employee.08@oms2.local', 'viewer'),
+        ('RAG KPI Insights Rollout', 'demo.employee.09@oms2.local', 'viewer'),
+        ('Mobile Timesheet Pilot', 'manager@oms2.local', 'owner'),
+        ('Mobile Timesheet Pilot', 'demo.employee.10@oms2.local', 'editor'),
+        ('Mobile Timesheet Pilot', 'demo.employee.11@oms2.local', 'viewer'),
+        ('Internal Automation Hub', 'admin@oms2.local', 'owner'),
+        ('Internal Automation Hub', 'demo.employee.12@oms2.local', 'editor'),
+        ('Internal Automation Hub', 'demo.employee.13@oms2.local', 'viewer')
+), resolved AS (
+    SELECT
+        p.id AS project_id,
+        u.id AS user_id,
+        rs.role_name
+    FROM role_seed rs
+    JOIN projects p ON p.name = rs.project_name AND p.deleted_at IS NULL
+    JOIN users u ON u.email = rs.email AND u.deleted_at IS NULL
+)
+INSERT INTO project_roles (user_id, project_id, role, created_at, updated_at, deleted_at)
+SELECT
+    r.user_id,
+    r.project_id,
+    r.role_name,
+    NOW(),
+    NOW(),
+    NULL
+FROM resolved r
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM project_roles pr
+    WHERE pr.user_id = r.user_id
+      AND pr.project_id = r.project_id
+);
+
+WITH task_seed(project_name, title, description, status_name, assignee_email, deadline_days, started_days, completed_days) AS (
+    VALUES
+        ('OMS2 Platform Revamp', 'Backlog grooming for Q2 epics', 'Prepare prioritized backlog and acceptance criteria for Q2 epics.', 'To Do', 'demo.employee.01@oms2.local', 8, 0, 0),
+        ('OMS2 Platform Revamp', 'Implement role-based sidebar navigation', 'Deliver role-aware workspace navigation and permissions mapping.', 'In Progress', 'demo.employee.02@oms2.local', 6, 4, 0),
+        ('OMS2 Platform Revamp', 'Migrate dashboard KPIs to API contracts', 'Replace static KPI metrics with backend-driven summaries.', 'Done', 'demo.employee.03@oms2.local', -2, 9, 2),
+        ('OMS2 Platform Revamp', 'Stabilize task status transition audit logs', 'Ensure every status transition writes a traceable audit entry.', 'In Progress', 'demo.employee.04@oms2.local', 9, 3, 0),
+        ('OMS2 Platform Revamp', 'Build attendance analytics widgets', 'Add attendance scorecards and distribution metrics for managers.', 'To Do', 'demo.employee.05@oms2.local', 11, 0, 0),
