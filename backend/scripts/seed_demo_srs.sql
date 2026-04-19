@@ -418,3 +418,83 @@ WHERE NOT EXISTS (
 
 WITH seeded_tasks AS (
     SELECT t.id, t.title, t.status, t.assignee_id, t.created_at, t.started_at, t.completed_at
+    FROM tasks t
+    WHERE t.title IN (
+        'Backlog grooming for Q2 epics',
+        'Implement role-based sidebar navigation',
+        'Migrate dashboard KPIs to API contracts',
+        'Stabilize task status transition audit logs',
+        'Build attendance analytics widgets',
+        'Write regression suite for auth flows',
+        'Design onboarding checklist workflow',
+        'Integrate client profile approval service',
+        'Create welcome email automation templates',
+        'Configure SLA escalation matrix',
+        'Build document upload policy validation',
+        'Demo dry-run with mock tenant',
+        'Index historical updates for retrieval',
+        'Implement semantic wiki regeneration job',
+        'Expose KPI trend endpoint for leadership',
+        'Add cache invalidation for stale sources',
+        'Tune vector search threshold per project',
+        'Publish RAG governance audit dashboard',
+        'Define mobile submission API contract',
+        'Build offline queue synchronization logic',
+        'QA pass for timezone-aware timestamps',
+        'Add push reminder scheduling pipeline',
+        'Pilot rollout checklist for field teams',
+        'Capture pilot retrospective findings',
+        'Map repetitive ops workflows for automation',
+        'Implement workflow bot for ticket triage',
+        'Deliver no-code automation playbook v1',
+        'Add failure alerting for automation jobs',
+        'Train support team on runbook updates',
+        'Executive review with ROI summary'
+    )
+), assignees AS (
+    SELECT
+        st.id AS task_id,
+        COALESCE(u.id, (SELECT id FROM users WHERE email = 'admin@oms2.local' LIMIT 1)) AS changed_by,
+        st.status,
+        st.created_at,
+        st.started_at,
+        st.completed_at
+    FROM seeded_tasks st
+    LEFT JOIN employees e ON e.id = st.assignee_id
+    LEFT JOIN users u ON u.email = e.email
+)
+INSERT INTO task_status_logs (task_id, from_status, to_status, changed_by, comment, created_at)
+SELECT
+    a.task_id,
+    NULL,
+    'To Do',
+    a.changed_by,
+    'seeded task created',
+    COALESCE(a.created_at, NOW() - INTERVAL '14 days')
+FROM assignees a
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM task_status_logs l
+    WHERE l.task_id = a.task_id
+      AND l.from_status IS NULL
+      AND l.to_status = 'To Do'
+);
+
+WITH seeded_tasks AS (
+    SELECT t.id, t.status, t.assignee_id, t.created_at, t.started_at
+    FROM tasks t
+    WHERE t.title IN (
+        'Backlog grooming for Q2 epics',
+        'Implement role-based sidebar navigation',
+        'Migrate dashboard KPIs to API contracts',
+        'Stabilize task status transition audit logs',
+        'Build attendance analytics widgets',
+        'Write regression suite for auth flows',
+        'Design onboarding checklist workflow',
+        'Integrate client profile approval service',
+        'Create welcome email automation templates',
+        'Configure SLA escalation matrix',
+        'Build document upload policy validation',
+        'Demo dry-run with mock tenant',
+        'Index historical updates for retrieval',
+        'Implement semantic wiki regeneration job',
