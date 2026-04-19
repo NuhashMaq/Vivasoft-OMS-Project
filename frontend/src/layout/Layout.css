@@ -1,56 +1,29 @@
-/* Layout Styles */
 .layout {
   display: flex;
   width: 100%;
-  height: 100vh;
-  background-color: var(--primary-light);
-  gap: 0;
+  min-height: 100vh;
+  padding: 16px;
+  gap: 12px;
 }
 
 .layout-main {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 30px;
-  overflow-y: auto;
-}
-
-.topbar {
-  background-color: white;
-  padding: 20px 30px;
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
-  margin-bottom: 30px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.topbar-left h1 {
-  margin: 0;
-  font-size: 24px;
-  color: var(--text-dark);
-}
-
-.topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.user-info {
-  font-size: 14px;
-  color: var(--text-light);
+  min-width: 0;
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(244, 250, 255, 0.96), rgba(240, 247, 255, 0.95));
+  border: 1px solid rgba(177, 198, 224, 0.42);
+  box-shadow: 0 20px 60px rgba(8, 29, 56, 0.2);
+  overflow: hidden;
 }
 
 .layout-content {
   flex: 1;
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
+  padding: 18px;
 }
 
-/* Scrollbar styling */
 .layout-main::-webkit-scrollbar,
 .layout-content::-webkit-scrollbar {
   width: 8px;
@@ -63,40 +36,32 @@
 
 .layout-main::-webkit-scrollbar-thumb,
 .layout-content::-webkit-scrollbar-thumb {
-  background: #D0D0D0;
+  background: #9fb4cf;
   border-radius: 4px;
 }
 
 .layout-main::-webkit-scrollbar-thumb:hover,
 .layout-content::-webkit-scrollbar-thumb:hover {
-  background: #B0B0B0;
+  background: #8198b7;
 }
 
-/* Responsive */
 @media (max-width: 1024px) {
-  .layout-main {
-    padding: 20px;
+  .layout {
+    padding: 10px;
   }
 
-  .topbar {
-    padding: 15px 20px;
+  .layout-main {
+    border-radius: 16px;
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .layout {
     flex-direction: column;
   }
 
-  .layout-main {
-    padding: 15px;
-  }
-
-  .topbar {
-    padding: 12px 15px;
-    margin-bottom: 15px;
-    flex-direction: column;
-    gap: 15px;
+  .layout-content {
+    padding: 12px;
   }
 }
 
