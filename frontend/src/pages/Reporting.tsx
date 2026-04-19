@@ -40,17 +40,21 @@ export const ReportingPage: React.FC = () => {
 
   if (!reportData) {
     return (
-      <div className="reporting-page">
-        <h1>Reporting Dashboard</h1>
-        <p>No data available</p>
+      <div className="page-shell">
+        <div className="panel">
+          <p className="muted">No reporting data available.</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="reporting-page">
+    <div className="reporting-page page-shell">
       <div className="reporting-header">
-        <h1>Reporting Dashboard</h1>
+        <div>
+          <h1 className="page-title">Reporting Dashboard</h1>
+          <p className="page-subtitle">Cross-project execution analytics, completion rates, and compliance rollups.</p>
+        </div>
       </div>
 
       <Filters />
