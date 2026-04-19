@@ -158,3 +158,43 @@ WITH demo_projects(project_name, short_description, start_date, end_date, status
         ('Client Onboarding Portal', 'Deliver structured onboarding lifecycle for enterprise clients.', CURRENT_DATE - INTERVAL '45 days', CURRENT_DATE + INTERVAL '95 days', 'Active', 'Client'),
         ('RAG KPI Insights Rollout', 'Operationalize retrieval, wiki regeneration, and KPI visibility.', CURRENT_DATE - INTERVAL '55 days', CURRENT_DATE + INTERVAL '110 days', 'Active', 'R&D'),
         ('Mobile Timesheet Pilot', 'Pilot mobile-first timesheet capture for distributed field teams.', CURRENT_DATE - INTERVAL '30 days', CURRENT_DATE + INTERVAL '75 days', 'On Hold', 'Internal'),
+        ('Internal Automation Hub', 'Centralize automation patterns and process optimization initiatives.', CURRENT_DATE - INTERVAL '90 days', CURRENT_DATE + INTERVAL '40 days', 'Completed', 'Internal')
+)
+INSERT INTO projects (name, short_description, start_date, end_date, status, type, created_at, updated_at, deleted_at)
+SELECT
+    dp.project_name,
+    dp.short_description,
+    dp.start_date,
+    dp.end_date,
+    dp.status_name,
+    dp.project_type,
+    NOW() - INTERVAL '25 days',
+    NOW(),
+    NULL
+FROM demo_projects dp
+ON CONFLICT (name)
+DO UPDATE SET
+    short_description = EXCLUDED.short_description,
+    start_date = EXCLUDED.start_date,
+    end_date = EXCLUDED.end_date,
+    status = EXCLUDED.status,
+    type = EXCLUDED.type,
+    updated_at = NOW(),
+    deleted_at = NULL;
+
+WITH role_seed(project_name, email, role_name) AS (
+    VALUES
+        ('OMS2 Platform Revamp', 'superadmin@oms2.local', 'owner'),
+        ('OMS2 Platform Revamp', 'admin@oms2.local', 'editor'),
+        ('OMS2 Platform Revamp', 'manager@oms2.local', 'editor'),
+        ('OMS2 Platform Revamp', 'demo.employee.01@oms2.local', 'viewer'),
+        ('OMS2 Platform Revamp', 'demo.employee.02@oms2.local', 'viewer'),
+        ('OMS2 Platform Revamp', 'demo.employee.03@oms2.local', 'viewer'),
+        ('Client Onboarding Portal', 'admin@oms2.local', 'owner'),
+        ('Client Onboarding Portal', 'manager@oms2.local', 'editor'),
+        ('Client Onboarding Portal', 'demo.employee.04@oms2.local', 'viewer'),
+        ('Client Onboarding Portal', 'demo.employee.05@oms2.local', 'viewer'),
+        ('Client Onboarding Portal', 'demo.employee.06@oms2.local', 'viewer'),
+        ('RAG KPI Insights Rollout', 'superadmin@oms2.local', 'owner'),
+        ('RAG KPI Insights Rollout', 'demo.employee.07@oms2.local', 'editor'),
+        ('RAG KPI Insights Rollout', 'demo.employee.08@oms2.local', 'viewer'),
