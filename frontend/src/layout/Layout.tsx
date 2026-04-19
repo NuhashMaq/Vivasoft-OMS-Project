@@ -12,7 +12,7 @@ export const Layout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
       <div className="layout-main">
         <Topbar />
         <main className="layout-content">
-          {children ?? <Outlet /> /* Renders Dashboard, Reporting, KPI, Wiki */}
+          {children ?? <Outlet />}
         </main>
       </div>
     </div>
