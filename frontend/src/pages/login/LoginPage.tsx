@@ -35,8 +35,8 @@ export const LoginPage: React.FC = () => {
       <div className="login-container">
         <div className="login-card">
           <div className="login-header">
-            <h1>Admin Dashboard</h1>
-            <p>Welcome Back</p>
+            <h1>OMS2 Project Workspace</h1>
+            <p>Plan, track, and report execution with AI-assisted workflow intelligence.</p>
           </div>
 
           {displayError && (
@@ -51,7 +51,7 @@ export const LoginPage: React.FC = () => {
               <input
                 id="email"
                 type="email"
-                placeholder="your@email.com"
+                placeholder="name@oms2.local"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isLoading}
@@ -72,36 +72,28 @@ export const LoginPage: React.FC = () => {
               />
             </div>
 
-            <div className="form-options">
-              <label className="remember-me">
-                <input type="checkbox" disabled={isLoading} />
-                Remember me
-              </label>
-              <a href="#" className="forgot-password">Forgot Password?</a>
-            </div>
-
             <button type="submit" className="login-button" disabled={isLoading}>
               {isLoading ? 'Signing In...' : 'Sign In'}
             </button>
           </form>
 
           <p className="login-footer">
-            Demo Credentials (seeded):<br/>
+            Demo Credentials:<br/>
             <strong>superadmin@oms2.local</strong> / <strong>password</strong><br/>
             <strong>admin@oms2.local</strong> / <strong>password</strong><br/>
-            <strong>employee@oms2.local</strong> / <strong>password</strong>
+            <strong>demo.employee.01@oms2.local</strong> / <strong>password</strong>
           </p>
         </div>
 
         <div className="login-side">
           <div className="side-content">
-            <h2>Manage Your Team</h2>
-            <p>Streamline your HR operations with our comprehensive employee management system</p>
+            <h2>Jira-Style PMS Experience</h2>
+            <p>Kanban, role-based workflows, daily updates, and RAG-powered search in one product demo stack.</p>
             <ul className="features">
-              <li>✓ Employee Management</li>
-              <li>✓ Attendance Tracking</li>
-              <li>✓ Department Organization</li>
-              <li>✓ Real-time Reports</li>
+              <li>5 seeded projects with active tasks</li>
+              <li>20 seeded demo employees</li>
+              <li>SRS-aligned daily update compliance</li>
+              <li>RAG + KPI integration for leadership views</li>
             </ul>
           </div>
         </div>
