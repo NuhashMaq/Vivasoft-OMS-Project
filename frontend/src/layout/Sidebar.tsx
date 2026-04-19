@@ -1,67 +1,76 @@
-import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
+import type { LucideIcon } from "lucide-react";
+import {
+  LayoutDashboard,
+  FolderKanban,
+  ListChecks,
+  Users,
+  FileBarChart2,
+  BrainCircuit,
+  BookText,
+  CalendarCheck2,
+  NotebookTabs,
+  LogOut,
+} from "lucide-react";
 
 interface MenuItem {
   id: string;
   label: string;
-  icon: string;
+  icon: LucideIcon;
   path: string;
 }
 
-interface RoleMenuMap {
-  [key: string]: MenuItem[];
-}
+type RoleMenuMap = Record<string, MenuItem[]>;
 
-// ✅ Menus (single source)
 const EMPLOYEE_MENU: MenuItem[] = [
-  { id: "dashboard", label: "Dashboard", icon: "📊", path: "/" },
-  { id: "tasks", label: "Tasks", icon: "✓", path: "/tasks" },
-  { id: "daily_updates", label: "Daily Updates", icon: "📝", path: "/daily-updates" },
-  { id: "attendance", label: "Attendance", icon: "📅", path: "/attendance" },
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/" },
+  { id: "tasks", label: "Tasks", icon: ListChecks, path: "/tasks" },
+  { id: "daily_updates", label: "Daily Updates", icon: NotebookTabs, path: "/daily-updates" },
+  { id: "attendance", label: "Attendance", icon: CalendarCheck2, path: "/attendance" },
 ];
 
 const PROJECT_MANAGER_MENU: MenuItem[] = [
-  { id: "dashboard", label: "Dashboard", icon: "📊", path: "/" },
-  { id: "projects", label: "Projects", icon: "📁", path: "/projects" },
-  { id: "tasks", label: "Tasks", icon: "✓", path: "/tasks" },
-  { id: "daily_updates", label: "Daily Updates", icon: "📝", path: "/daily-updates" },
-  { id: "attendance", label: "Attendance", icon: "📅", path: "/attendance" },
-];
-
-const TEAM_LEAD_MENU: MenuItem[] = [
-  { id: "dashboard", label: "Dashboard", icon: "📊", path: "/" },
-  { id: "team_view", label: "Team View", icon: "👥", path: "/team" },
-  { id: "projects", label: "Projects", icon: "📁", path: "/projects" },
-  { id: "reports", label: "Reports", icon: "📈", path: "/reports" },
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/" },
+  { id: "projects", label: "Projects", icon: FolderKanban, path: "/projects" },
+  { id: "tasks", label: "Tasks", icon: ListChecks, path: "/tasks" },
+  { id: "daily_updates", label: "Daily Updates", icon: NotebookTabs, path: "/daily-updates" },
+  { id: "attendance", label: "Attendance", icon: CalendarCheck2, path: "/attendance" },
+  { id: "wiki", label: "AI Wiki", icon: BookText, path: "/wiki" },
 ];
 
 const ADMIN_MENU: MenuItem[] = [
-  { id: "dashboard", label: "Dashboard", icon: "📊", path: "/" },
-  { id: "employees", label: "Employees", icon: "👥", path: "/employees" },
-  { id: "projects", label: "Projects", icon: "📁", path: "/projects" },
-  { id: "tasks", label: "Tasks", icon: "✓", path: "/tasks" },
-  { id: "reports", label: "Reports", icon: "📈", path: "/reporting" },
-  { id: "wiki", label: "Wiki", icon: "📚", path: "/wiki" },
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/" },
+  { id: "employees", label: "Employees", icon: Users, path: "/employees" },
+  { id: "projects", label: "Projects", icon: FolderKanban, path: "/projects" },
+  { id: "tasks", label: "Tasks", icon: ListChecks, path: "/tasks" },
+  { id: "daily_updates", label: "Daily Updates", icon: NotebookTabs, path: "/daily-updates" },
+  { id: "reporting", label: "Reporting", icon: FileBarChart2, path: "/reporting" },
+  { id: "wiki", label: "AI Wiki", icon: BookText, path: "/wiki" },
 ];
 
 const SUPER_ADMIN_MENU: MenuItem[] = [
-  { id: "dashboard", label: "Dashboard", icon: "📊", path: "/" },
-  { id: "employees", label: "Employees", icon: "👥", path: "/employees" },
-  { id: "projects", label: "Projects", icon: "📁", path: "/projects" },
-  { id: "tasks", label: "Tasks", icon: "✓", path: "/tasks" },
-  { id: "reports", label: "Reports", icon: "📈", path: "/reporting" },
-  { id: "kpi", label: "KPI", icon: "📉", path: "/kpi" },
-  { id: "wiki", label: "AI Wiki", icon: "🤖", path: "/wiki" },
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/" },
+  { id: "employees", label: "Employees", icon: Users, path: "/employees" },
+  { id: "projects", label: "Projects", icon: FolderKanban, path: "/projects" },
+  { id: "tasks", label: "Tasks", icon: ListChecks, path: "/tasks" },
+  { id: "daily_updates", label: "Daily Updates", icon: NotebookTabs, path: "/daily-updates" },
+  { id: "reporting", label: "Reporting", icon: FileBarChart2, path: "/reporting" },
+  { id: "kpi", label: "KPI", icon: BrainCircuit, path: "/kpi" },
+  { id: "wiki", label: "AI Wiki", icon: BookText, path: "/wiki" },
 ];
 
-// ✅ Role map: keep ONLY this
 const ROLE_MENU_MAP: RoleMenuMap = {
   employee: EMPLOYEE_MENU,
   project_manager: PROJECT_MANAGER_MENU,
-  team_lead: TEAM_LEAD_MENU,
+  manager: PROJECT_MANAGER_MENU,
   admin: ADMIN_MENU,
   super_admin: SUPER_ADMIN_MENU,
+};
+
+const prettifyRole = (role: string | undefined): string => {
+  const normalized = (role || "employee").replace(/_/g, " ");
+  return normalized.charAt(0).toUpperCase() + normalized.slice(1);
 };
 
 export const Sidebar: React.FC = () => {
@@ -69,12 +78,15 @@ export const Sidebar: React.FC = () => {
   const location = useLocation();
   const { user, logout } = useAuth();
 
-  // ✅ normalize role (handles SUPER_ADMIN / super_admin etc.)
   const roleKey = (user?.role ?? "employee").toLowerCase();
-
   const menuItems = ROLE_MENU_MAP[roleKey] ?? EMPLOYEE_MENU;
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) => {
+    if (path === "/") {
+      return location.pathname === "/";
+    }
+    return location.pathname.startsWith(path);
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -85,7 +97,11 @@ export const Sidebar: React.FC = () => {
     <aside className="sidebar">
       <div className="sidebar-header">
         <div className="sidebar-logo">
-          <h2>Office</h2>
+          <span className="logo-badge">OMS</span>
+          <div>
+            <h2>Project Hub</h2>
+            <p>SRS-Aligned Workspace</p>
+          </div>
         </div>
 
         {user && (
@@ -93,7 +109,7 @@ export const Sidebar: React.FC = () => {
             <div className="user-avatar">{user.name?.charAt(0)?.toUpperCase()}</div>
             <div className="user-info">
               <p className="user-name">{user.name}</p>
-              <p className="user-role">{user.role}</p>
+              <p className="user-role">{prettifyRole(user.role)}</p>
             </div>
           </div>
         )}
@@ -108,7 +124,7 @@ export const Sidebar: React.FC = () => {
                 onClick={() => navigate(item.path)}
                 title={item.label}
               >
-                <span className="menu-icon">{item.icon}</span>
+                <item.icon size={16} className="menu-icon" />
                 <span className="menu-label">{item.label}</span>
               </button>
             </li>
@@ -118,7 +134,8 @@ export const Sidebar: React.FC = () => {
 
       <div className="sidebar-footer">
         <button className="logout-btn" onClick={handleLogout}>
-          🚪 Logout
+          <LogOut size={15} />
+          Logout
         </button>
       </div>
     </aside>
