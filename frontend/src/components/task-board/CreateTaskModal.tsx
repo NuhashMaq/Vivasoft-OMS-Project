@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, User, Calendar, Type, FileText, Loader2 } from 'lucide-react';
+import { X } from 'lucide-react';
 import { useCreateTask } from '../../hooks/useCreateTask';
 import { useProjectMembers } from '../../hooks/useProjectMembers';
 import { useAuth } from '../../auth/AuthContext';
@@ -57,61 +57,47 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ projectId, isO
     const canSelectAssignee = user?.role === 'super_admin' || user?.role === 'project_manager';
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-                {/* Header */}
-                <div className="px-6 py-4 border-b flex justify-between items-center bg-slate-50/50">
-                    <h3 className="text-lg font-bold text-slate-800">Create New Task</h3>
-                    <button onClick={onClose} className="p-2 hover:bg-slate-200/50 rounded-full transition-colors text-slate-400">
+        <div className="task-modal-overlay" onClick={onClose}>
+            <div className="task-modal" onClick={(event) => event.stopPropagation()}>
+                <div className="task-modal-header">
+                    <h3>Create New Task</h3>
+                    <button onClick={onClose} className="task-modal-close" type="button">
                         <X size={20} />
                     </button>
                 </div>
 
-                {/* Form */}
-                <form onSubmit={handleSubmit} className="p-6 space-y-5">
-                    {/* Title */}
-                    <div className="space-y-1.5">
-                        <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                            <Type size={16} className="text-blue-500" />
-                            Task Title
-                        </label>
+                <form onSubmit={handleSubmit} className="task-create-form">
+                    <div>
+                        <label className="kpi-label">Task Title</label>
                         <input
+                            className="field"
                             required
                             type="text"
                             placeholder="e.g. Implement auth logic"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-slate-400"
                         />
                     </div>
 
-                    {/* Description */}
-                    <div className="space-y-1.5">
-                        <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                            <FileText size={16} className="text-blue-500" />
-                            Description
-                        </label>
+                    <div>
+                        <label className="kpi-label">Description</label>
                         <textarea
+                            className="field-area"
                             rows={3}
                             placeholder="Provide details about the task..."
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none placeholder:text-slate-400"
                         />
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {/* Assignee */}
-                        <div className="space-y-1.5">
-                            <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                                <User size={16} className="text-blue-500" />
-                                Assign To
-                            </label>
+                    <div className="controls-row">
+                        <div>
+                            <label className="kpi-label">Assign To</label>
                             <select
+                                className="field-select"
                                 disabled={!canSelectAssignee || loadingMembers}
                                 value={assigneeId}
                                 onChange={(e) => setAssigneeId(e.target.value)}
-                                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all disabled:opacity-60 cursor-pointer"
                             >
                                 <option value={user?.id}>Myself</option>
                                 {members?.filter(m => m.id !== user?.id).map((member) => (
@@ -122,43 +108,31 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ projectId, isO
                             </select>
                         </div>
 
-                        {/* Deadline */}
-                        <div className="space-y-1.5">
-                            <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                                <Calendar size={16} className="text-blue-500" />
-                                Deadline
-                            </label>
+                        <div>
+                            <label className="kpi-label">Deadline</label>
                             <input
+                                className="field"
                                 type="date"
                                 value={deadline}
                                 onChange={(e) => setDeadline(e.target.value)}
-                                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                             />
                         </div>
                     </div>
 
-                    {/* Actions */}
-                    <div className="pt-4 flex items-center gap-3">
+                    <div className="task-modal-footer" style={{ padding: 0, borderTop: 0 }}>
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-600 font-semibold rounded-xl hover:bg-slate-50 transition-colors"
+                            className="btn btn-ghost"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={isPending || !title.trim()}
-                            className="flex-[2] px-4 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md shadow-blue-500/20 flex items-center justify-center gap-2"
+                            className="btn btn-primary"
                         >
-                            {isPending ? (
-                                <>
-                                    <Loader2 size={18} className="animate-spin" />
-                                    Creating...
-                                </>
-                            ) : (
-                                'Create Task'
-                            )}
+                            {isPending ? 'Creating...' : 'Create Task'}
                         </button>
                     </div>
                 </form>
