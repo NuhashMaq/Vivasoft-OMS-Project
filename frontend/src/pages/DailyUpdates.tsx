@@ -80,8 +80,8 @@ export const DailyUpdates: React.FC = () => {
     setPendingItems((prev) => prev.filter((_, idx) => idx !== index));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
 
     if (!canSubmitUpdates || pendingItems.length === 0) {
       return;
@@ -104,89 +104,76 @@ export const DailyUpdates: React.FC = () => {
   };
 
   return (
-    <div>
-      <h2>Daily Updates</h2>
-      <p style={{ color: '#666', marginBottom: '20px' }}>
-        Submit weekday updates with multiple task entries and comments.
-      </p>
-
-      <div
-        style={{
-          background: '#f5f8ff',
-          border: '1px solid #d7e2ff',
-          borderRadius: '8px',
-          padding: '12px 16px',
-          marginBottom: '20px',
-        }}
-      >
-        <strong>Compliance:</strong>{' '}
-        {complianceQuery.isLoading
-          ? 'Checking...'
-          : `${complianceQuery.data?.missing_weekdays ?? 0} weekday submission(s) missing in the selected window.`}
+    <div className="page-shell">
+      <div className="page-headline">
+        <div>
+          <h2 className="page-title">Daily Updates</h2>
+          <p className="page-subtitle">
+            Submit weekday execution notes with task-level actions to satisfy SRS compliance and reporting.
+          </p>
+        </div>
       </div>
 
-      {canSubmitUpdates ? (
-        <div
-          style={{
-            background: '#fff',
-            padding: '20px',
-            borderRadius: '8px',
-            border: '1px solid #e0e0e0',
-            marginBottom: '30px',
-          }}
-        >
-          <h3 style={{ marginTop: 0 }}>Submit Daily Update</h3>
+      <section className="kpi-strip">
+        <article className="kpi-card">
+          <p className="kpi-label">Missing Weekdays</p>
+          <p className="kpi-value">{complianceQuery.data?.missing_weekdays ?? 0}</p>
+          <p className="kpi-foot">In last 14 days</p>
+        </article>
+        <article className="kpi-card">
+          <p className="kpi-label">Recent Submissions</p>
+          <p className="kpi-value">{updatesQuery.data?.length ?? 0}</p>
+          <p className="kpi-foot">Visible in current window</p>
+        </article>
+      </section>
 
-          <form onSubmit={handleSubmit}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px', marginBottom: '12px' }}>
+      {canSubmitUpdates ? (
+        <section className="panel">
+          <h3 className="panel-title">Submit Daily Update</h3>
+
+          <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 12 }}>
+            <div className="controls-row">
               <div>
-                <label style={{ display: 'block', marginBottom: '6px', fontWeight: '500' }}>Date</label>
+                <label className="kpi-label">Date</label>
                 <input
+                  className="field"
                   type="date"
                   value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ddd' }}
+                  onChange={(event) => setDate(event.target.value)}
                 />
               </div>
+
               <div>
-                <label style={{ display: 'block', marginBottom: '6px', fontWeight: '500' }}>Hours Worked</label>
+                <label className="kpi-label">Hours Worked</label>
                 <input
+                  className="field"
                   type="number"
                   step="0.5"
                   min="0"
                   max="24"
                   value={hoursWorked}
-                  onChange={(e) => setHoursWorked(e.target.value)}
-                  style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ddd' }}
+                  onChange={(event) => setHoursWorked(event.target.value)}
                 />
               </div>
             </div>
 
-            <div style={{ marginBottom: '12px' }}>
-              <label style={{ display: 'block', marginBottom: '6px', fontWeight: '500' }}>Summary</label>
+            <div>
+              <label className="kpi-label">Summary</label>
               <textarea
+                className="field-area"
                 value={summary}
-                onChange={(e) => setSummary(e.target.value)}
+                onChange={(event) => setSummary(event.target.value)}
                 placeholder="Optional overall summary for the day"
-                style={{ width: '100%', minHeight: '80px', padding: '10px', borderRadius: '4px', border: '1px solid #ddd', fontFamily: 'inherit' }}
               />
             </div>
 
-            <div
-              style={{
-                border: '1px solid #e6e6e6',
-                borderRadius: '8px',
-                padding: '14px',
-                marginBottom: '16px',
-                background: '#fafafa',
-              }}
-            >
-              <h4 style={{ marginTop: 0, marginBottom: '10px' }}>Add Task Update Item</h4>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px' }}>
+            <div className="card-soft" style={{ display: 'grid', gap: 10 }}>
+              <h4 style={{ margin: 0 }}>Add Task Update Item</h4>
+              <div className="controls-row">
                 <select
+                  className="field-select"
                   value={selectedProjectId}
-                  onChange={(e) => setSelectedProjectId(e.target.value)}
-                  style={{ padding: '10px', borderRadius: '4px', border: '1px solid #ddd' }}
+                  onChange={(event) => setSelectedProjectId(event.target.value)}
                 >
                   <option value="">Select project</option>
                   {projects?.map((project) => (
@@ -197,9 +184,9 @@ export const DailyUpdates: React.FC = () => {
                 </select>
 
                 <select
+                  className="field-select"
                   value={selectedTaskId}
-                  onChange={(e) => setSelectedTaskId(e.target.value)}
-                  style={{ padding: '10px', borderRadius: '4px', border: '1px solid #ddd' }}
+                  onChange={(event) => setSelectedTaskId(event.target.value)}
                   disabled={!selectedProjectId}
                 >
                   <option value="">Select task</option>
@@ -211,9 +198,9 @@ export const DailyUpdates: React.FC = () => {
                 </select>
 
                 <select
+                  className="field-select"
                   value={action}
-                  onChange={(e) => setAction(e.target.value as DailyUpdateItem['action'])}
-                  style={{ padding: '10px', borderRadius: '4px', border: '1px solid #ddd' }}
+                  onChange={(event) => setAction(event.target.value as DailyUpdateItem['action'])}
                 >
                   <option value="started">Started</option>
                   <option value="progressed">Progressed</option>
@@ -221,196 +208,94 @@ export const DailyUpdates: React.FC = () => {
                 </select>
               </div>
 
-              <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 <input
+                  className="field"
                   type="text"
-                  placeholder="Comment for this task update"
+                  placeholder="Comment for this update item"
                   value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  style={{ flex: 1, padding: '10px', borderRadius: '4px', border: '1px solid #ddd' }}
+                  onChange={(event) => setComment(event.target.value)}
+                  style={{ flex: 1, minWidth: 220 }}
                 />
-                <button
-                  type="button"
-                  onClick={handleAddItem}
-                  style={{
-                    background: '#eef4ff',
-                    border: '1px solid #c9d8ff',
-                    color: '#2a4ea7',
-                    padding: '10px 14px',
-                    borderRadius: '6px',
-                    cursor: 'pointer',
-                  }}
-                >
+                <button type="button" className="btn btn-ghost" onClick={handleAddItem}>
                   Add Item
                 </button>
               </div>
             </div>
 
             {pendingItems.length > 0 && (
-              <div style={{ marginBottom: '14px' }}>
-                <h4 style={{ marginBottom: '10px' }}>Pending Items ({pendingItems.length})</h4>
-                <div style={{ display: 'grid', gap: '8px' }}>
-                  {pendingItems.map((item, idx) => (
-                    <div
-                      key={`${item.task_id || 'new'}-${idx}`}
-                      style={{
-                        border: '1px solid #e0e0e0',
-                        borderRadius: '6px',
-                        padding: '10px',
-                        background: '#fff',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        gap: '12px',
-                      }}
-                    >
-                      <div>
-                        <div style={{ fontWeight: '600', marginBottom: '4px' }}>
-                          Task #{item.task_id} • {item.action}
-                        </div>
-                        <div style={{ color: '#555', fontSize: '14px' }}>{item.comment}</div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveItem(idx)}
-                        style={{
-                          background: 'transparent',
-                          border: '1px solid #f0c5c5',
-                          color: '#b73b3b',
-                          borderRadius: '6px',
-                          padding: '4px 10px',
-                          cursor: 'pointer',
-                          height: 'fit-content',
-                        }}
-                      >
+              <div style={{ display: 'grid', gap: 8 }}>
+                {pendingItems.map((item, idx) => (
+                  <article key={`${item.task_id || 'new'}-${idx}`} className="card-soft" style={{ padding: 10 }}>
+                    <div className="page-headline" style={{ alignItems: 'center' }}>
+                      <p style={{ fontWeight: 600 }}>
+                        Task #{item.task_id || 'n/a'} • {item.action}
+                      </p>
+                      <button type="button" className="btn btn-danger" onClick={() => handleRemoveItem(idx)}>
                         Remove
                       </button>
                     </div>
-                  ))}
-                </div>
+                    <p className="muted" style={{ marginTop: 6 }}>{item.comment}</p>
+                  </article>
+                ))}
               </div>
             )}
 
             {error && (
-              <div
-                style={{
-                  marginBottom: '12px',
-                  padding: '10px 12px',
-                  borderRadius: '6px',
-                  background: '#fdeaea',
-                  border: '1px solid #f5c2c2',
-                  color: '#8f1d1d',
-                }}
-              >
-                {getErrorMessage(error)}
+              <div className="card-soft" style={{ borderColor: 'rgba(239,68,68,0.4)', background: 'rgba(254,226,226,0.65)' }}>
+                <p>{getErrorMessage(error)}</p>
               </div>
             )}
 
             {isSuccess && (
-              <div
-                style={{
-                  marginBottom: '12px',
-                  padding: '10px 12px',
-                  borderRadius: '6px',
-                  background: '#e7f8ec',
-                  border: '1px solid #bde5c8',
-                  color: '#1f6b34',
-                }}
-              >
-                Daily update submitted successfully.
+              <div className="card-soft" style={{ borderColor: 'rgba(16,185,129,0.4)', background: 'rgba(209,250,229,0.6)' }}>
+                <p>Daily update submitted successfully.</p>
               </div>
             )}
 
-            <button
-              type="submit"
-              disabled={isPending || pendingItems.length === 0}
-              style={{
-                background: '#667eea',
-                color: '#fff',
-                border: 'none',
-                padding: '10px 24px',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: '500',
-                opacity: isPending || pendingItems.length === 0 ? 0.6 : 1,
-              }}
-            >
-              {isPending ? 'Submitting...' : 'Submit Daily Update'}
-            </button>
+            <div>
+              <button type="submit" className="btn btn-primary" disabled={isPending || pendingItems.length === 0}>
+                {isPending ? 'Submitting...' : 'Submit Daily Update'}
+              </button>
+            </div>
           </form>
-        </div>
+        </section>
       ) : (
-        <div
-          style={{
-            background: '#fee',
-            padding: '20px',
-            borderRadius: '8px',
-            border: '1px solid #fcc',
-            marginBottom: '30px',
-            color: '#c33',
-          }}
-        >
-          You do not have permission to submit daily updates.
-        </div>
+        <section className="panel">
+          <p className="muted">Your role can view updates but cannot submit them.</p>
+        </section>
       )}
 
-      <h3>Recent Updates</h3>
-      <div style={{ display: 'grid', gap: '15px' }}>
-        {updatesQuery.isLoading && (
-          <div
-            style={{
-              background: '#fff',
-              padding: '15px 20px',
-              borderRadius: '8px',
-              border: '1px solid #e0e0e0',
-            }}
-          >
-            Loading updates...
-          </div>
-        )}
+      <section className="panel">
+        <h3 className="panel-title">Recent Updates</h3>
+
+        {updatesQuery.isLoading && <p className="muted">Loading updates...</p>}
 
         {!updatesQuery.isLoading && (updatesQuery.data?.length || 0) === 0 && (
-          <div
-            style={{
-              background: '#fff',
-              padding: '15px 20px',
-              borderRadius: '8px',
-              border: '1px solid #e0e0e0',
-            }}
-          >
-            No daily updates found for the selected date range.
-          </div>
+          <p className="muted">No daily updates found for the selected period.</p>
         )}
 
-        {updatesQuery.data?.map((update) => (
-          <div
-            key={update.id}
-            style={{
-              background: '#fff',
-              padding: '15px 20px',
-              borderRadius: '8px',
-              border: '1px solid #e0e0e0',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-              <div style={{ fontSize: '13px', color: '#666' }}>Date: {update.update_date.slice(0, 10)}</div>
-              <div style={{ fontSize: '13px', fontWeight: 600 }}>{update.hours_worked ?? 0}h</div>
-            </div>
-
-            {update.summary && <p style={{ marginTop: 0 }}>{update.summary}</p>}
-
-            {update.items.length > 0 && (
-              <ul style={{ margin: 0, paddingLeft: '18px', color: '#444' }}>
-                {update.items.map((item) => (
-                  <li key={item.id}>
-                    Task #{item.task_id || 'n/a'} - {item.action}: {item.comment}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        ))}
-      </div>
+        <div style={{ display: 'grid', gap: 10 }}>
+          {updatesQuery.data?.map((update) => (
+            <article key={update.id} className="card-soft">
+              <div className="page-headline" style={{ alignItems: 'center' }}>
+                <p className="kpi-label">{update.update_date.slice(0, 10)}</p>
+                <p className="kpi-foot">{update.hours_worked ?? 0}h</p>
+              </div>
+              {update.summary && <p style={{ marginTop: 8 }}>{update.summary}</p>}
+              {update.items.length > 0 && (
+                <ul style={{ marginTop: 8, marginBottom: 0, color: '#2d4769' }}>
+                  {update.items.map((item) => (
+                    <li key={item.id}>
+                      Task #{item.task_id || 'n/a'} - {item.action}: {item.comment}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </article>
+          ))}
+        </div>
+      </section>
     </div>
   );
 };
