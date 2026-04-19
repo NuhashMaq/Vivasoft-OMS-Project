@@ -278,3 +278,43 @@ WITH task_seed(project_name, title, description, status_name, assignee_email, de
         ('OMS2 Platform Revamp', 'Migrate dashboard KPIs to API contracts', 'Replace static KPI metrics with backend-driven summaries.', 'Done', 'demo.employee.03@oms2.local', -2, 9, 2),
         ('OMS2 Platform Revamp', 'Stabilize task status transition audit logs', 'Ensure every status transition writes a traceable audit entry.', 'In Progress', 'demo.employee.04@oms2.local', 9, 3, 0),
         ('OMS2 Platform Revamp', 'Build attendance analytics widgets', 'Add attendance scorecards and distribution metrics for managers.', 'To Do', 'demo.employee.05@oms2.local', 11, 0, 0),
+        ('OMS2 Platform Revamp', 'Write regression suite for auth flows', 'Automate login/session/logout regression checks.', 'Done', 'demo.employee.06@oms2.local', -1, 7, 1),
+
+        ('Client Onboarding Portal', 'Design onboarding checklist workflow', 'Create onboarding stage definitions and handoff criteria.', 'To Do', 'demo.employee.07@oms2.local', 10, 0, 0),
+        ('Client Onboarding Portal', 'Integrate client profile approval service', 'Wire approvals into profile activation and risk checks.', 'In Progress', 'demo.employee.08@oms2.local', 7, 3, 0),
+        ('Client Onboarding Portal', 'Create welcome email automation templates', 'Finalize email templates and trigger events for launch.', 'Done', 'demo.employee.09@oms2.local', -3, 10, 3),
+        ('Client Onboarding Portal', 'Configure SLA escalation matrix', 'Define incident escalations and breach response ownership.', 'In Progress', 'demo.employee.10@oms2.local', 5, 2, 0),
+        ('Client Onboarding Portal', 'Build document upload policy validation', 'Add policy checks for document format and compliance rules.', 'To Do', 'demo.employee.11@oms2.local', 12, 0, 0),
+        ('Client Onboarding Portal', 'Demo dry-run with mock tenant', 'Run end-to-end onboarding rehearsal with demo data.', 'Done', 'demo.employee.12@oms2.local', -1, 8, 1),
+
+        ('RAG KPI Insights Rollout', 'Index historical updates for retrieval', 'Backfill chunk index with historical project updates.', 'In Progress', 'demo.employee.13@oms2.local', 6, 5, 0),
+        ('RAG KPI Insights Rollout', 'Implement semantic wiki regeneration job', 'Regenerate project wiki from retrieved context snapshots.', 'To Do', 'demo.employee.14@oms2.local', 9, 0, 0),
+        ('RAG KPI Insights Rollout', 'Expose KPI trend endpoint for leadership', 'Publish trend metrics endpoint for executive dashboard.', 'Done', 'demo.employee.15@oms2.local', -4, 9, 2),
+        ('RAG KPI Insights Rollout', 'Add cache invalidation for stale sources', 'Invalidate search cache when source freshness window expires.', 'In Progress', 'demo.employee.16@oms2.local', 4, 2, 0),
+        ('RAG KPI Insights Rollout', 'Tune vector search threshold per project', 'Calibrate threshold values to improve retrieval precision.', 'To Do', 'demo.employee.17@oms2.local', 11, 0, 0),
+        ('RAG KPI Insights Rollout', 'Publish RAG governance audit dashboard', 'Expose ingestion, retrieval, and model-governance visibility.', 'Done', 'demo.employee.18@oms2.local', -2, 7, 1),
+
+        ('Mobile Timesheet Pilot', 'Define mobile submission API contract', 'Document and review contract for mobile timesheet submissions.', 'To Do', 'demo.employee.01@oms2.local', 13, 0, 0),
+        ('Mobile Timesheet Pilot', 'Build offline queue synchronization logic', 'Sync local mobile drafts to server with conflict handling.', 'In Progress', 'demo.employee.02@oms2.local', 9, 3, 0),
+        ('Mobile Timesheet Pilot', 'QA pass for timezone-aware timestamps', 'Verify timezone-safe creation and reporting of entries.', 'Done', 'demo.employee.03@oms2.local', -1, 8, 1),
+        ('Mobile Timesheet Pilot', 'Add push reminder scheduling pipeline', 'Schedule configurable reminder pushes for missing entries.', 'In Progress', 'demo.employee.04@oms2.local', 6, 2, 0),
+        ('Mobile Timesheet Pilot', 'Pilot rollout checklist for field teams', 'Prepare rollout tasks and ownership matrix for pilot teams.', 'To Do', 'demo.employee.05@oms2.local', 15, 0, 0),
+        ('Mobile Timesheet Pilot', 'Capture pilot retrospective findings', 'Summarize pilot outcomes, blockers, and next iterations.', 'Done', 'demo.employee.06@oms2.local', -1, 7, 1),
+
+        ('Internal Automation Hub', 'Map repetitive ops workflows for automation', 'Identify repeatable service-desk workflows for automation.', 'To Do', 'demo.employee.07@oms2.local', 8, 0, 0),
+        ('Internal Automation Hub', 'Implement workflow bot for ticket triage', 'Build rule-driven triage bot and confidence scoring.', 'In Progress', 'demo.employee.08@oms2.local', 5, 3, 0),
+        ('Internal Automation Hub', 'Deliver no-code automation playbook v1', 'Publish no-code automation patterns and implementation guides.', 'Done', 'demo.employee.09@oms2.local', -3, 10, 2),
+        ('Internal Automation Hub', 'Add failure alerting for automation jobs', 'Create alerting, escalation, and recovery hooks for job failures.', 'In Progress', 'demo.employee.10@oms2.local', 7, 4, 0),
+        ('Internal Automation Hub', 'Train support team on runbook updates', 'Run training sessions and adoption tracking for support team.', 'To Do', 'demo.employee.11@oms2.local', 10, 0, 0),
+        ('Internal Automation Hub', 'Executive review with ROI summary', 'Present ROI outcomes and scaling recommendations.', 'Done', 'demo.employee.12@oms2.local', -2, 9, 2)
+), resolved AS (
+    SELECT
+        p.id AS project_id,
+        ts.title,
+        ts.description,
+        ts.status_name,
+        e.id AS assignee_id,
+        ts.deadline_days,
+        ts.started_days,
+        ts.completed_days
+    FROM task_seed ts
