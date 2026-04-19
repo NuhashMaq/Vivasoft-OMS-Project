@@ -35,10 +35,10 @@ export const WikiPage: React.FC = () => {
   };
 
   return (
-    <div className="wiki-page">
+    <div className="wiki-page page-shell">
       <div className="wiki-header">
-        <h1>Project Wiki</h1>
-        <p>Search and explore project documentation and resources</p>
+        <h1 className="page-title">Project Wiki</h1>
+        <p className="page-subtitle">Search grounded project knowledge from indexed tasks, updates, and generated wiki versions.</p>
       </div>
 
       <SearchBar onSearch={handleSearch} />
