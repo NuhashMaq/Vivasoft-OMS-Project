@@ -1,7 +1,7 @@
 .wiki-page {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 12px;
 }
 
 .wiki-header {
@@ -12,33 +12,34 @@
 }
 
 .wiki-header h1 {
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 700;
-  color: var(--text-dark);
+  color: #11243f;
   margin: 0;
 }
 
 .wiki-header p {
-  font-size: 15px;
-  color: var(--text-light);
+  font-size: 14px;
+  color: #5f738f;
   margin: 0;
 }
 
 .wiki-welcome,
 .wiki-no-results {
-  background: white;
-  padding: 60px 30px;
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
+  background: linear-gradient(165deg, #ffffff, #f6faff);
+  padding: 36px 20px;
+  border-radius: 14px;
+  box-shadow: 0 10px 24px rgba(12, 34, 63, 0.1);
+  border: 1px solid var(--line);
   text-align: center;
-  color: var(--text-light);
+  color: #5f738f;
   font-size: 16px;
 }
 
 .wiki-no-results {
-  background-color: #FFF3CD;
-  color: #856404;
-  border-left: 4px solid #856404;
+  background-color: #fff8e1;
+  color: #92400e;
+  border-color: #fcd34d;
 }
 
 @media (max-width: 768px) {
