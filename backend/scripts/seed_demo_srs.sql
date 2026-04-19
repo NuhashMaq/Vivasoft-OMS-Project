@@ -558,3 +558,63 @@ WITH seeded_tasks AS (
         'Integrate client profile approval service',
         'Create welcome email automation templates',
         'Configure SLA escalation matrix',
+        'Build document upload policy validation',
+        'Demo dry-run with mock tenant',
+        'Index historical updates for retrieval',
+        'Implement semantic wiki regeneration job',
+        'Expose KPI trend endpoint for leadership',
+        'Add cache invalidation for stale sources',
+        'Tune vector search threshold per project',
+        'Publish RAG governance audit dashboard',
+        'Define mobile submission API contract',
+        'Build offline queue synchronization logic',
+        'QA pass for timezone-aware timestamps',
+        'Add push reminder scheduling pipeline',
+        'Pilot rollout checklist for field teams',
+        'Capture pilot retrospective findings',
+        'Map repetitive ops workflows for automation',
+        'Implement workflow bot for ticket triage',
+        'Deliver no-code automation playbook v1',
+        'Add failure alerting for automation jobs',
+        'Train support team on runbook updates',
+        'Executive review with ROI summary'
+    )
+), assignees AS (
+    SELECT
+        st.id AS task_id,
+        COALESCE(u.id, (SELECT id FROM users WHERE email = 'admin@oms2.local' LIMIT 1)) AS changed_by,
+        st.status,
+        st.created_at,
+        st.completed_at
+    FROM seeded_tasks st
+    LEFT JOIN employees e ON e.id = st.assignee_id
+    LEFT JOIN users u ON u.email = e.email
+)
+INSERT INTO task_status_logs (task_id, from_status, to_status, changed_by, comment, created_at)
+SELECT
+    a.task_id,
+    'In Progress',
+    'Done',
+    a.changed_by,
+    'task completed',
+    COALESCE(a.completed_at, a.created_at + INTERVAL '3 day', NOW() - INTERVAL '2 days')
+FROM assignees a
+WHERE a.status = 'Done'
+  AND NOT EXISTS (
+      SELECT 1
+      FROM task_status_logs l
+      WHERE l.task_id = a.task_id
+        AND l.from_status = 'In Progress'
+        AND l.to_status = 'Done'
+  );
+
+WITH demo_users AS (
+    SELECT
+        u.id,
+        u.email,
+        row_number() OVER (ORDER BY u.email) AS rn
+    FROM users u
+    WHERE u.email LIKE 'demo.employee.%@oms2.local'
+      AND u.deleted_at IS NULL
+    ORDER BY u.email
+    LIMIT 20
