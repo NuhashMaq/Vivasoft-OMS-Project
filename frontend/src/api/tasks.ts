@@ -74,113 +74,49 @@ export interface DailyUpdateCompliance {
     missing_weekdays: number;
 }
 
-// Demo data for offline/no-backend mode
-const DEMO_TASKS: Record<string, Task[]> = {
-    'proj-1': [
-        {
-            id: 'task-1',
-            project_id: 'proj-1',
-            title: 'Design System Implementation',
-            description: 'Create a reusable component library with Tailwind CSS.',
-            status: 'In Progress',
-            assignee_id: '1', // John Employee
-            created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-            started_at: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-        },
-        {
-            id: 'task-2',
-            project_id: 'proj-1',
-            title: 'User Authentication Flow',
-            description: 'Implement JWT-based auth with demo fallback.',
-            status: 'Done',
-            assignee_id: '1',
-            created_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-            started_at: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000).toISOString(),
-            completed_at: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
-        },
-        {
-            id: 'task-3',
-            project_id: 'proj-1',
-            title: 'Dashboard Wireframing',
-            description: 'Layout the main sections for the office management tool.',
-            status: 'To Do',
-            assignee_id: '2', // Sarah PM
-            created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-        },
-        {
-            id: 'task-4',
-            project_id: 'proj-1',
-            title: 'API Documentation',
-            description: 'Write Swagger specs for all existing endpoints.',
-            status: 'To Do',
-            assignee_id: '3', // Mike
-            created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-        }
-    ],
-    'proj-2': [
-        {
-            id: 'task-5',
-            project_id: 'proj-2',
-            title: 'LLM Model Integration',
-            description: 'Connect to OpenAI API and set up basic prompting.',
-            status: 'In Progress',
-            assignee_id: '1',
-            created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-            started_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-        }
-    ]
-};
+interface ApiTask {
+    id: number | string;
+    project_id: number | string;
+    title: string;
+    description?: string;
+    status: TaskStatus;
+    assignee_id: number | string;
+    created_at: string;
+    started_at?: string;
+    completed_at?: string;
+}
 
-const DEMO_HISTORY: Record<string, TaskStatusLog[]> = {
-    'task-1': [
-        { id: 'log-1', task_id: 'task-1', from_status: null, to_status: 'To Do', changed_by: 'Sarah PM', created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString() },
-        { id: 'log-2', task_id: 'task-1', from_status: 'To Do', to_status: 'In Progress', changed_by: 'John Employee', created_at: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(), comment: 'Starting build-out.' }
-    ],
-    'task-2': [
-        { id: 'log-3', task_id: 'task-2', from_status: null, to_status: 'To Do', changed_by: 'Sarah PM', created_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString() },
-        { id: 'log-4', task_id: 'task-2', from_status: 'To Do', to_status: 'In Progress', changed_by: 'John Employee', created_at: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000).toISOString() },
-        { id: 'log-5', task_id: 'task-2', from_status: 'In Progress', to_status: 'Done', changed_by: 'John Employee', created_at: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(), comment: 'Auth is rock solid.' }
-    ]
-};
+interface ApiTaskStatusLog {
+    id: number | string;
+    task_id: number | string;
+    from_status?: TaskStatus | null;
+    to_status: TaskStatus;
+    changed_by: number | string;
+    created_at: string;
+    comment?: string;
+}
 
-const DEMO_DAILY_UPDATES: DailyUpdateRecord[] = [
-    {
-        id: 'du-1',
-        user_id: '1',
-        update_date: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-        summary: 'Worked on API integration and fixed bug in task board.',
-        hours_worked: 8,
-        created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-        updated_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-        items: [
-            {
-                id: 'dui-1',
-                task_id: 'task-1',
-                project_id: 'proj-1',
-                action: 'progressed',
-                comment: 'Completed UI wiring and state handling.',
-            },
-        ],
-    },
-    {
-        id: 'du-2',
-        user_id: '1',
-        update_date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-        summary: 'Reviewed auth flow and closed pending review comments.',
-        hours_worked: 7.5,
-        created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-        updated_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-        items: [
-            {
-                id: 'dui-2',
-                task_id: 'task-2',
-                project_id: 'proj-1',
-                action: 'completed',
-                comment: 'Merged final authentication checks and docs.',
-            },
-        ],
-    },
-];
+const normalizeTask = (task: ApiTask): Task => ({
+    id: String(task.id),
+    project_id: String(task.project_id),
+    title: String(task.title || ''),
+    description: String(task.description || ''),
+    status: task.status,
+    assignee_id: String(task.assignee_id),
+    created_at: String(task.created_at),
+    started_at: task.started_at ? String(task.started_at) : undefined,
+    completed_at: task.completed_at ? String(task.completed_at) : undefined,
+});
+
+const normalizeTaskStatusLog = (log: ApiTaskStatusLog): TaskStatusLog => ({
+    id: String(log.id),
+    task_id: String(log.task_id),
+    from_status: log.from_status ?? null,
+    to_status: log.to_status,
+    changed_by: String(log.changed_by),
+    created_at: String(log.created_at),
+    comment: log.comment ? String(log.comment) : undefined,
+});
 
 const toInt = (value?: string): number | undefined => {
     if (!value) return undefined;
@@ -190,54 +126,23 @@ const toInt = (value?: string): number | undefined => {
 };
 
 export const fetchProjectTasks = async (projectId: string): Promise<Task[]> => {
-    try {
-        const response = await api.get(`/projects/${projectId}/tasks`, { timeout: 3000 });
-        return response.data;
-    } catch (error) {
-        console.warn(`Backend reachability issue for project ${projectId} tasks, falling back to demo data.`, error);
-        return DEMO_TASKS[projectId] || [];
-    }
+    const response = await api.get<ApiTask[]>(`/projects/${projectId}/tasks`, { timeout: 5000 });
+    return (Array.isArray(response.data) ? response.data : []).map(normalizeTask);
 };
 
 export const createProjectTask = async (projectId: string, payload: TaskCreatePayload): Promise<Task> => {
-    try {
-        const response = await api.post(`/projects/${projectId}/tasks`, payload, { timeout: 3000 });
-        return response.data;
-    } catch (error) {
-        console.warn('Backend reachability issue for creating task, simulating success in demo mode.', error);
-        const newTask: Task = {
-            id: `task-${Math.random().toString(36).substr(2, 9)}`,
-            project_id: projectId,
-            title: payload.title,
-            description: payload.description,
-            status: 'To Do',
-            assignee_id: payload.assignee_id,
-            created_at: new Date().toISOString()
-        };
-        // Note: In a real demo mode, we might want to push to DEMO_TASKS, but for now just returning is fine for UI feedback
-        return newTask;
-    }
+    const response = await api.post<ApiTask>(`/projects/${projectId}/tasks`, payload, { timeout: 5000 });
+    return normalizeTask(response.data);
 };
 
 export const updateTaskStatus = async (taskId: string, status: TaskStatus): Promise<Task> => {
-    try {
-        const response = await api.patch(`/tasks/${taskId}/status`, { status }, { timeout: 3000 });
-        return response.data;
-    } catch (error) {
-        console.warn(`Backend reachability issue for updating task ${taskId}, simulating success in demo mode.`, error);
-        // Returning a partial object that matches what the UI needs
-        return { id: taskId, status } as Task;
-    }
+    const response = await api.patch<ApiTask>(`/tasks/${taskId}/status`, { status }, { timeout: 5000 });
+    return normalizeTask(response.data);
 };
 
 export const fetchTaskHistory = async (taskId: string): Promise<TaskStatusLog[]> => {
-    try {
-        const response = await api.get(`/tasks/${taskId}/history`, { timeout: 3000 });
-        return response.data;
-    } catch (error) {
-        console.warn(`Backend reachability issue for task ${taskId} history, falling back to demo data.`, error);
-        return DEMO_HISTORY[taskId] || [];
-    }
+    const response = await api.get<ApiTaskStatusLog[]>(`/tasks/${taskId}/history`, { timeout: 5000 });
+    return (Array.isArray(response.data) ? response.data : []).map(normalizeTaskStatusLog);
 };
 
 export const submitDailyUpdate = async (payload: DailyUpdatePayload): Promise<void> => {
@@ -270,7 +175,7 @@ export const submitDailyUpdate = async (payload: DailyUpdatePayload): Promise<vo
 export const fetchMyDailyUpdates = async (from?: string, to?: string): Promise<DailyUpdateRecord[]> => {
     try {
         const response = await api.get('/daily-updates', {
-            timeout: 3000,
+            timeout: 5000,
             params: { from, to },
         });
 
@@ -294,15 +199,17 @@ export const fetchMyDailyUpdates = async (from?: string, to?: string): Promise<D
                 : [],
         }));
     } catch (error) {
-        console.warn('Backend reachability issue for fetching daily updates, falling back to demo data.', error);
-        return DEMO_DAILY_UPDATES;
+        if (axios.isAxiosError(error) && error.response) {
+            throw error;
+        }
+        return [];
     }
 };
 
 export const fetchDailyCompliance = async (from?: string, to?: string): Promise<DailyUpdateCompliance> => {
     try {
         const response = await api.get('/daily-updates/compliance', {
-            timeout: 3000,
+            timeout: 5000,
             params: { from, to },
         });
         return {
@@ -311,7 +218,9 @@ export const fetchDailyCompliance = async (from?: string, to?: string): Promise<
             missing_weekdays: Number(response.data?.missing_weekdays || 0),
         };
     } catch (error) {
-        console.warn('Backend reachability issue for compliance view, using fallback value.', error);
+        if (axios.isAxiosError(error) && error.response) {
+            throw error;
+        }
         return {
             from: from || '',
             to: to || '',
