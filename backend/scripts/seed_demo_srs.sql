@@ -618,3 +618,63 @@ WITH demo_users AS (
       AND u.deleted_at IS NULL
     ORDER BY u.email
     LIMIT 20
+)
+INSERT INTO daily_updates (user_id, update_date, summary, hours_worked, created_at, updated_at)
+SELECT
+    du.id,
+    CURRENT_DATE - INTERVAL '1 day',
+    format('Completed assigned workstream updates and coordination checkpoints (%s).', du.email),
+    (7.0 + ((du.rn % 4) * 0.5))::double precision,
+    NOW() - INTERVAL '1 day',
+    NOW()
+FROM demo_users du
+ON CONFLICT (user_id, update_date)
+DO UPDATE SET
+    summary = EXCLUDED.summary,
+    hours_worked = EXCLUDED.hours_worked,
+    updated_at = NOW();
+
+WITH demo_updates AS (
+    SELECT
+        d.id AS daily_update_id,
+        u.email,
+        d.update_date
+    FROM daily_updates d
+    JOIN users u ON u.id = d.user_id
+    WHERE u.email LIKE 'demo.employee.%@oms2.local'
+      AND d.update_date = CURRENT_DATE - INTERVAL '1 day'
+), mapped_task AS (
+    SELECT
+        du.daily_update_id,
+        t.id AS task_id,
+        t.project_id,
+        t.title
+    FROM demo_updates du
+    JOIN employees e ON e.email = du.email AND e.deleted_at IS NULL
+    JOIN LATERAL (
+        SELECT tt.id, tt.project_id, tt.title
+        FROM tasks tt
+        WHERE tt.assignee_id = e.id
+        ORDER BY tt.updated_at DESC NULLS LAST, tt.id DESC
+        LIMIT 1
+    ) t ON TRUE
+)
+INSERT INTO daily_update_items (
+    daily_update_id,
+    task_id,
+    project_id,
+    action,
+    comment,
+    new_task_title,
+    new_task_description,
+    new_task_assignee_id,
+    new_task_deadline,
+    created_at,
+    updated_at
+)
+SELECT
+    mt.daily_update_id,
+    mt.task_id,
+    mt.project_id,
+    'task_update',
+    format('Progress updated for "%s" with latest execution notes.', mt.title),
