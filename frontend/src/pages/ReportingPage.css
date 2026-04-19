@@ -1,7 +1,7 @@
 .reporting-page {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
 }
 
 .reporting-header {
@@ -11,20 +11,20 @@
 }
 
 .reporting-header h1 {
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 700;
-  color: var(--text-dark);
+  color: #11243f;
   margin: 0;
 }
 
 .summary-section {
-  margin: 12px 0;
+  margin: 0;
 }
 
 .charts-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 24px;
+  gap: 14px;
 }
 
 @media (max-width: 768px) {
