@@ -12,6 +12,6 @@ RUN apk add --no-cache postgresql-client
 COPY --from=build /app/rag-engine ./rag-engine
 COPY migrations ./migrations
 COPY scripts/migrate.sh ./scripts/migrate.sh
-RUN chmod +x ./scripts/migrate.sh
+RUN sed -i 's/\r$//' ./scripts/migrate.sh && chmod +x ./scripts/migrate.sh
 EXPOSE 8085
-CMD ["/bin/sh", "-c", "./scripts/migrate.sh && ./rag-engine"]
+CMD ["/bin/sh", "-c", "sh ./scripts/migrate.sh && ./rag-engine"]
