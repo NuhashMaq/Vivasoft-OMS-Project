@@ -12,92 +12,75 @@ export interface Project {
     name: string;
     description: string;
     status: string;
+    type?: string;
+    start_date?: string;
+    end_date?: string;
     created_at: string;
 }
 
-// Demo data for offline/no-backend mode
-const DEMO_PROJECTS: Project[] = [
-    {
-        id: 'proj-1',
-        name: 'Office Management System',
-        description: 'Developing a comprehensive dashboard for office operations.',
-        status: 'active',
-        created_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-    },
-    {
-        id: 'proj-2',
-        name: 'AI Integration Suite',
-        description: 'Implementing LLM-powered tools for internal productivity.',
-        status: 'active',
-        created_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
-    },
-    {
-        id: 'proj-3',
-        name: 'Legacy Migration',
-        description: 'Transitioning old services to the new scalable architecture.',
-        status: 'on_hold',
-        created_at: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
-    }
-];
+interface ApiProject {
+    id: number | string;
+    name: string;
+    short_description?: string;
+    description?: string;
+    status?: string;
+    type?: string;
+    start_date?: string;
+    end_date?: string;
+    created_at?: string;
+}
 
-const DEMO_MEMBERS: Record<string, ProjectMember[]> = {
-    'proj-1': [
-        { id: '1', name: 'John Employee', email: 'employee@example.com', role: 'employee' },
-        { id: '2', name: 'Sarah Project Manager', email: 'pm@example.com', role: 'project_manager' },
-        { id: '3', name: 'Mike Designer', email: 'mike@example.com', role: 'employee' },
-    ],
-    'proj-2': [
-        { id: '1', name: 'John Employee', email: 'employee@example.com', role: 'employee' },
-        { id: '2', name: 'Sarah Project Manager', email: 'pm@example.com', role: 'project_manager' },
-        { id: '4', name: 'AI Specialist', email: 'ai@example.com', role: 'employee' },
-    ],
-    'proj-3': [
-        { id: '2', name: 'Sarah Project Manager', email: 'pm@example.com', role: 'project_manager' },
-    ]
-};
+interface ProjectListResponse {
+    data?: ApiProject[];
+}
+
+interface ProjectDetailResponse {
+    data?: ApiProject;
+}
+
+const normalizeProject = (project: ApiProject): Project => ({
+    id: String(project.id),
+    name: String(project.name || ''),
+    description: String(project.short_description || project.description || ''),
+    status: String(project.status || ''),
+    type: project.type ? String(project.type) : undefined,
+    start_date: project.start_date ? String(project.start_date) : undefined,
+    end_date: project.end_date ? String(project.end_date) : undefined,
+    created_at: String(project.created_at || new Date().toISOString()),
+});
 
 export const fetchProjects = async (): Promise<Project[]> => {
-    try {
-        const response = await api.get('/projects', { timeout: 3000 });
-        const payload = response.data;
+    const response = await api.get<ProjectListResponse>('/projects', {
+        timeout: 5000,
+        params: { page: 1, page_size: 200 },
+    });
 
-        if (Array.isArray(payload)) {
-            return payload;
-        }
+    const rows = Array.isArray(response.data?.data) ? response.data.data : [];
+    return rows.map(normalizeProject);
+};
 
-        if (Array.isArray(payload?.data)) {
-            return payload.data.map((project: any) => ({
-                id: String(project.id),
-                name: String(project.name || ''),
-                description: String(project.short_description || project.description || ''),
-                status: String(project.status || ''),
-                created_at: String(project.created_at || new Date().toISOString()),
-            }));
-        }
-
-        return [];
-    } catch (error) {
-        console.warn('Backend reachability issue for /projects, falling back to demo data.', error);
-        return DEMO_PROJECTS;
+export const fetchProjectById = async (projectId: string): Promise<Project> => {
+    const response = await api.get<ProjectDetailResponse>(`/projects/${projectId}`, { timeout: 5000 });
+    if (!response.data?.data) {
+        throw new Error('Project not found');
     }
+    return normalizeProject(response.data.data);
 };
 
 export const fetchProjectMembers = async (projectId: string): Promise<ProjectMember[]> => {
-    try {
-        const response = await api.get(`/projects/${projectId}/roles`, { timeout: 3000 });
-        const members = response.data?.members;
-        if (!Array.isArray(members)) {
-            return [];
-        }
+    const response = await api.get<{ members?: Array<{
+        user_id: number | string;
+        first_name?: string;
+        last_name?: string;
+        email?: string;
+        role?: string;
+    }> }>(`/projects/${projectId}/roles`, { timeout: 5000 });
 
-        return members.map((member: any) => ({
-            id: String(member.user_id),
-            name: `${member.first_name || ''} ${member.last_name || ''}`.trim(),
-            email: String(member.email || ''),
-            role: String(member.role || ''),
-        }));
-    } catch (error) {
-        console.warn(`Backend reachability issue for project ${projectId} members, falling back to demo data.`, error);
-        return DEMO_MEMBERS[projectId] || [];
-    }
+    const members = Array.isArray(response.data?.members) ? response.data.members : [];
+    return members.map((member) => ({
+        id: String(member.user_id),
+        name: `${member.first_name || ''} ${member.last_name || ''}`.trim(),
+        email: String(member.email || ''),
+        role: String(member.role || ''),
+    }));
 };
