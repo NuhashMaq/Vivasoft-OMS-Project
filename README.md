@@ -15,6 +15,25 @@ OMS2 is a full-stack Project Management System demo workspace with:
 - Daily update and compliance-compatible seed data.
 - RAG-powered Wiki and KPI endpoints ready for supervisor-level walkthroughs.
 
+## Animated Quick Links
+
+<div align="center">
+   <a href="./docker-compose.yml"><img src="./docs/assets/btn-run-stack.svg" alt="Run Docker Stack" width="330" /></a>
+   <a href="#system-architecture"><img src="./docs/assets/btn-architecture.svg" alt="View Architecture" width="330" /></a>
+</div>
+
+<div align="center">
+   <a href="./backend/README.md"><img src="./docs/assets/btn-backend.svg" alt="Open Backend Readme" width="330" /></a>
+   <a href="./frontend/README.md"><img src="./docs/assets/btn-frontend.svg" alt="Open Frontend Readme" width="330" /></a>
+</div>
+
+<div align="center">
+   <a href="./rag-kpi-engine/README.md"><img src="./docs/assets/btn-rag.svg" alt="Open RAG Readme" width="330" /></a>
+   <a href="./backend/scripts/seed_demo_srs.sql"><img src="./docs/assets/btn-seed.sql.svg" alt="Open Demo Seed SQL" width="330" /></a>
+</div>
+
+If your preview engine blocks SVG animation, the buttons remain fully clickable as regular links.
+
 ## Quick Start (Docker)
 
 1. From repository root, build and start all services:
