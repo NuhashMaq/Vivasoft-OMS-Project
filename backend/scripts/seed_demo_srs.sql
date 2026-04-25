@@ -728,3 +728,27 @@ SELECT 'seeded_tasks', COUNT(*)::text FROM tasks WHERE title IN (
     'Demo dry-run with mock tenant',
     'Index historical updates for retrieval',
     'Implement semantic wiki regeneration job',
+    'Expose KPI trend endpoint for leadership',
+    'Add cache invalidation for stale sources',
+    'Tune vector search threshold per project',
+    'Publish RAG governance audit dashboard',
+    'Define mobile submission API contract',
+    'Build offline queue synchronization logic',
+    'QA pass for timezone-aware timestamps',
+    'Add push reminder scheduling pipeline',
+    'Pilot rollout checklist for field teams',
+    'Capture pilot retrospective findings',
+    'Map repetitive ops workflows for automation',
+    'Implement workflow bot for ticket triage',
+    'Deliver no-code automation playbook v1',
+    'Add failure alerting for automation jobs',
+    'Train support team on runbook updates',
+    'Executive review with ROI summary'
+)
+UNION ALL
+SELECT 'daily_updates_yesterday', COUNT(*)::text FROM daily_updates WHERE update_date = CURRENT_DATE - INTERVAL '1 day'
+UNION ALL
+SELECT 'daily_update_items_yesterday', COUNT(*)::text
+FROM daily_update_items di
+JOIN daily_updates du ON du.id = di.daily_update_id
+WHERE du.update_date = CURRENT_DATE - INTERVAL '1 day';

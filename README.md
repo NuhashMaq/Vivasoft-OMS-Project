@@ -15,7 +15,7 @@ OMS2 is a full-stack Project Management System demo workspace with:
 - Daily update and compliance-compatible seed data.
 - RAG-powered Wiki and KPI endpoints ready for supervisor-level walkthroughs.
 
-## Animated Quick Links
+## Quick Links
 
 <div align="center">
    <a href="./docker-compose.yml"><img src="./docs/assets/btn-run-stack.svg" alt="Run Docker Stack" width="330" /></a>
@@ -60,6 +60,238 @@ Get-Content -Raw .\backend\scripts\seed_demo_srs.sql | docker exec -i oms2-postg
 - `admin@oms2.local`
 - `manager@oms2.local`
 - `demo.employee.01@oms2.local`
+
+## Production Deployment (Free Tier, Step by Step)
+
+This runbook deploys the full OMS2 stack (frontend, backend, RAG, PostgreSQL) on one Oracle Cloud Always Free VM with HTTPS.
+
+### 1. Provision Free Infrastructure
+
+1. Create an Oracle Cloud account.
+2. Create an Always Free compute instance:
+    - Shape: `VM.Standard.A1.Flex`
+    - OCPU and Memory: start with `2 OCPU / 12 GB RAM` (increase if available)
+    - OS: Ubuntu 22.04 LTS
+3. Reserve and attach a public IP to avoid IP changes.
+4. In OCI network security rules, allow inbound:
+    - `22` (SSH)
+    - `80` (HTTP)
+    - `443` (HTTPS)
+
+### 2. Point Your Domain
+
+1. In your DNS provider, create an `A` record:
+    - Host: `oms2` (or root `@`)
+    - Value: your VM public IP
+2. Wait for DNS propagation.
+
+### 3. SSH and Prepare Server
+
+```bash
+ssh ubuntu@<YOUR_VM_PUBLIC_IP>
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y ca-certificates curl gnupg lsb-release git ufw
+```
+
+Configure firewall:
+
+```bash
+sudo ufw allow OpenSSH
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw --force enable
+sudo ufw status
+```
+
+### 4. Install Docker Engine + Compose Plugin
+
+```bash
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+echo \
+   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+   $(. /etc/os-release && echo $VERSION_CODENAME) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo usermod -aG docker $USER
+newgrp docker
+docker --version
+docker compose version
+```
+
+### 5. Clone Project on Server
+
+```bash
+git clone git@github.com:NuhashMaq/Vivasoft-OMS-Project.git
+cd Vivasoft-OMS-Project
+```
+
+If SSH cloning is not configured:
+
+```bash
+git clone https://github.com/NuhashMaq/Vivasoft-OMS-Project.git
+cd Vivasoft-OMS-Project
+```
+
+### 6. Create Production Override Files
+
+Create a deploy folder:
+
+```bash
+mkdir -p deploy
+```
+
+Create `deploy/Caddyfile` (replace domain):
+
+```bash
+cat > deploy/Caddyfile << 'EOF'
+oms2.example.com {
+   encode gzip
+   reverse_proxy frontend:80
+}
+EOF
+```
+
+Create `docker-compose.prod.yml`:
+
+```bash
+cat > docker-compose.prod.yml << 'EOF'
+services:
+   postgres:
+      ports: []
+      environment:
+         POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+   backend:
+      ports: []
+      environment:
+         ENV: production
+         DB_PASSWORD: ${POSTGRES_PASSWORD}
+         JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+
+   rag:
+      ports: []
+      environment:
+         DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD}@postgres:5432/oms2?sslmode=disable
+
+   frontend:
+      ports: []
+      expose:
+         - "80"
+
+   caddy:
+      image: caddy:2-alpine
+      container_name: oms2-caddy
+      restart: unless-stopped
+      depends_on:
+         - frontend
+      ports:
+         - "80:80"
+         - "443:443"
+      volumes:
+         - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+         - caddy_data:/data
+         - caddy_config:/config
+
+volumes:
+   caddy_data:
+   caddy_config:
+EOF
+```
+
+### 7. Create Secret Environment File
+
+Create `.env` in repository root:
+
+```bash
+cat > .env << 'EOF'
+POSTGRES_PASSWORD=CHANGE_THIS_TO_STRONG_PASSWORD
+JWT_SECRET_KEY=CHANGE_THIS_TO_A_LONG_RANDOM_SECRET
+HF_API_TOKEN=
+EOF
+```
+
+Generate secure values quickly:
+
+```bash
+openssl rand -base64 36
+```
+
+### 8. Start Production Stack
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.yml -f docker-compose.prod.yml ps
+```
+
+### 9. Seed Demo Data
+
+```bash
+docker exec -i oms2-postgres psql -U postgres -d oms2 < backend/scripts/seed_demo_srs.sql
+```
+
+### 10. Validate Health and Access
+
+1. Open your domain in browser: `https://oms2.example.com`
+2. Validate backend through frontend proxy path:
+    - `https://oms2.example.com/api/v1/auth/me` (expects auth behavior)
+3. Validate RAG health through frontend proxy path:
+    - `https://oms2.example.com/rag/health`
+4. Login with demo account:
+    - `superadmin@oms2.local` / `password`
+
+### 11. Configure Daily Database Backup
+
+Create backup script:
+
+```bash
+mkdir -p $HOME/scripts $HOME/backups/oms2
+cat > $HOME/scripts/backup-oms2.sh << 'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+ts=$(date +%F_%H-%M-%S)
+docker exec oms2-postgres pg_dump -U postgres -d oms2 | gzip > "$HOME/backups/oms2/oms2_${ts}.sql.gz"
+find "$HOME/backups/oms2" -type f -mtime +7 -delete
+EOF
+chmod +x $HOME/scripts/backup-oms2.sh
+```
+
+Add cron entry:
+
+```bash
+(crontab -l 2>/dev/null; echo "0 3 * * * $HOME/scripts/backup-oms2.sh") | crontab -
+crontab -l
+```
+
+### 12. Deploy Updates Safely
+
+```bash
+cd ~/Vivasoft-OMS-Project
+git pull origin main
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+docker image prune -f
+```
+
+### 13. Basic Troubleshooting
+
+Check service state:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml ps
+```
+
+Check logs:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml logs -f --tail=150 frontend backend rag postgres caddy
+```
+
+Restart stack:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml restart
+```
 
 ## Animated UX Narrative
 

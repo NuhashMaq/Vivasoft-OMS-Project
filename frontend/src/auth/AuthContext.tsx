@@ -167,7 +167,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setToken(loginData.token);
       setUser(normalizedUser);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Login failed. Please try again.';
+      const isNetworkError =
+        (err instanceof TypeError) ||
+        (err instanceof Error && /failed to fetch|networkerror|network error/i.test(err.message));
+
+      const errorMessage = isNetworkError
+        ? `Unable to reach server at ${API_BASE_URL}. Please check deployment and try again.`
+        : (err instanceof Error ? err.message : 'Login failed. Please try again.');
       setError(errorMessage);
       throw err;
     } finally {
