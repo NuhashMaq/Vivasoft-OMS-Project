@@ -1,16 +1,44 @@
-# React + Vite
+# OMS2 Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + TypeScript UI for the OMS2 project workspace.
 
-Currently, two official plugins are available:
+## Live URL
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- https://attachment-project-vivasoft.onrender.com
 
-## React Compiler
+## Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React + TypeScript + Vite
+- Nginx static hosting with API reverse proxy
 
-## Expanding the ESLint configuration
+## Local Development
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+npm install
+npm run dev
+```
+
+Open http://localhost:3000
+
+## Environment Variables
+
+Create a `.env` file in this folder (or set in Render):
+
+```
+VITE_API_URL=/api/v1
+VITE_RAG_API_URL=/rag/v1
+```
+
+These values are relative because Nginx proxies `/api` and `/rag` to the backend and RAG services.
+
+## Build
+
+```bash
+npm run build
+```
+
+## Demo Credentials
+
+- superadmin@oms2.local / password
+- admin@oms2.local / password
+- demo.employee.01@oms2.local / password
