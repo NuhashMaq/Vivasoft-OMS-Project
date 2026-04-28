@@ -10,6 +10,24 @@ export const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [localError, setLocalError] = useState<string>('');
 
+  const demoProjects = [
+    'Northwind Launchpad',
+    'Retail Ops Sprint',
+    'KPI Dashboard Refresh',
+  ];
+
+  const demoTasks = [
+    'Finalize Q2 rollout scope',
+    'Backlog grooming for mobile sync',
+    'QA: timezone + daily updates',
+  ];
+
+  const demoEmployees = [
+    'Nadia Islam — PM',
+    'Rafi Ahmed — Engineer',
+    'Maya Chowdhury — Analyst',
+  ];
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLocalError('');
@@ -35,8 +53,7 @@ export const LoginPage: React.FC = () => {
       <div className="login-container">
         <div className="login-card">
           <div className="login-header">
-            <h1>OMS2 Project Workspace</h1>
-            <p>Plan, track, and report execution with AI-assisted workflow intelligence.</p>
+            <h1>Sign in</h1>
           </div>
 
           {displayError && (
@@ -77,6 +94,13 @@ export const LoginPage: React.FC = () => {
             </button>
           </form>
 
+          <div className="signup-panel">
+            <span>Need an account?</span>
+            <a className="signup-button" href="mailto:superadmin@oms2.local">
+              Request Access
+            </a>
+          </div>
+
           <p className="login-footer">
             Demo Credentials:<br/>
             <strong>superadmin@oms2.local</strong> / <strong>password</strong><br/>
@@ -84,16 +108,29 @@ export const LoginPage: React.FC = () => {
             <strong>demo.employee.01@oms2.local</strong> / <strong>password</strong>
           </p>
         </div>
-
-        <div className="login-side">
-          <div className="side-content">
-            <h2>Jira-Style PMS Experience</h2>
-            <p>Kanban, role-based workflows, daily updates, and RAG-powered search in one product demo stack.</p>
-            <ul className="features">
-              <li>5 seeded projects with active tasks</li>
-              <li>20 seeded demo employees</li>
-              <li>SRS-aligned daily update compliance</li>
-              <li>RAG + KPI integration for leadership views</li>
+        <div className="demo-panel">
+          <div className="demo-card">
+            <h2>Demo Projects</h2>
+            <ul>
+              {demoProjects.map((project) => (
+                <li key={project}>{project}</li>
+              ))}
+            </ul>
+          </div>
+          <div className="demo-card">
+            <h2>Demo Tasks</h2>
+            <ul>
+              {demoTasks.map((task) => (
+                <li key={task}>{task}</li>
+              ))}
+            </ul>
+          </div>
+          <div className="demo-card">
+            <h2>Demo Employees</h2>
+            <ul>
+              {demoEmployees.map((employee) => (
+                <li key={employee}>{employee}</li>
+              ))}
             </ul>
           </div>
         </div>
