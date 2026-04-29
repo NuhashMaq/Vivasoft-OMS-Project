@@ -1,16 +1,29 @@
 # OMS2 Backend API
 
-Go + Gin API powering auth, RBAC, employees, projects, tasks, and daily updates.
+Go + Gin API for auth, RBAC, projects, tasks, employees, and daily updates.
 
 ## Live URL
 
 - Health: https://vivasoft-oms-project-1.onrender.com/health
 
-## Stack
+## Architecture
 
-- Go + Gin
-- GORM + PostgreSQL
-- JWT auth
+```mermaid
+graph TB
+  H[Handlers] --> S[Services]
+  S --> R[Repositories]
+  R --> DB[(PostgreSQL)]
+  S --> RAG[RAG KPI Engine]
+```
+
+## Core Routes
+
+- Auth: `/api/v1/auth/login`, `/api/v1/auth/me`, `/api/v1/auth/logout`
+- Users/Roles: `/api/v1/users`, `/api/v1/roles`
+- Employees: `/api/v1/employees`
+- Projects: `/api/v1/projects`, `/api/v1/projects/:project_id/roles`
+- Tasks: `/api/v1/projects/:project_id/tasks`, `/api/v1/tasks/:id/status`, `/api/v1/tasks/:id/history`
+- Daily updates: `/api/v1/daily-updates`, `/api/v1/daily-updates/compliance`
 
 ## Local Development
 
@@ -40,17 +53,12 @@ RAG_ENGINE_URL=http://localhost:8085
 
 ## Seed Demo Data
 
-From repository root:
-
 ```bash
 docker exec -i oms2-postgres psql -U postgres -d oms2 < backend/scripts/seed_demo_srs.sql
 ```
 
-## Core Routes
+## Health Check
 
-- Auth: `/api/v1/auth/login`, `/api/v1/auth/me`, `/api/v1/auth/logout`
-- Users/Roles: `/api/v1/users`, `/api/v1/roles`
-- Employees: `/api/v1/employees`
-- Projects: `/api/v1/projects`, `/api/v1/projects/:project_id/roles`
-- Tasks: `/api/v1/projects/:project_id/tasks`, `/api/v1/tasks/:id/status`, `/api/v1/tasks/:id/history`
-- Daily updates: `/api/v1/daily-updates`, `/api/v1/daily-updates/compliance`
+```bash
+curl http://localhost:8081/health
+```

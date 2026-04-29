@@ -1,15 +1,31 @@
 # OMS2 RAG KPI Engine
 
-Go service for project-scoped semantic search, wiki lifecycle, KPI reporting, and governance logs.
+Go service for semantic search, wiki lifecycle, KPI scoring, and governance logs.
 
 ## Live URL
 
 - Health: https://vivasoft-oms-project.onrender.com/health
 
-## Prerequisites
+## Architecture
 
-- Go 1.22+
-- PostgreSQL 14+ with pgvector
+```mermaid
+graph LR
+  BE[OMS2 Backend] --> RAG[RAG KPI Engine]
+  RAG --> DB[(PostgreSQL + pgvector)]
+```
+
+## Core Endpoints
+
+- Health: `GET /health`
+- Search: `POST /v1/search`, `POST /v1/search/grounded-summary`
+- Wiki: `POST /v1/wiki/mark-stale`, `POST /v1/wiki/generate`
+- KPI: `POST /v1/kpi/compute`, `GET /v1/kpi/report?employee_id={id}`
+- Governance: `POST /v1/admin/audit`, `POST /v1/admin/backup-health`, `GET /v1/admin/backup-health`
+
+## Required Headers (Protected Routes)
+
+- X-User-ID
+- X-User-Role
 
 ## Local Development
 
@@ -48,16 +64,3 @@ ENABLE_RERANK=true
 ENABLE_SEARCH_CACHE=true
 ENABLE_KPI_INSIGHTS=true
 ```
-
-## Core Endpoints
-
-- Health: `GET /health`
-- Search: `POST /v1/search`, `POST /v1/search/grounded-summary`
-- Wiki: `POST /v1/wiki/mark-stale`, `POST /v1/wiki/generate`
-- KPI: `POST /v1/kpi/compute`, `GET /v1/kpi/report?employee_id={id}`
-- Governance: `POST /v1/admin/audit`, `POST /v1/admin/backup-health`, `GET /v1/admin/backup-health`
-
-## Required Headers (Protected Routes)
-
-- X-User-ID
-- X-User-Role

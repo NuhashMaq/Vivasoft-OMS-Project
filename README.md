@@ -1,6 +1,6 @@
-# OMS2: Office Management + RAG KPI Platform
+# OMS2 Project Hub
 
-OMS2 is a full-stack demo workspace for project execution tracking, daily updates, and RAG-powered insights.
+SRS-aligned workspace for execution tracking, daily updates, and RAG-powered intelligence.
 
 ## Live URLs
 
@@ -8,7 +8,7 @@ OMS2 is a full-stack demo workspace for project execution tracking, daily update
 - Backend health: https://vivasoft-oms-project-1.onrender.com/health
 - RAG health: https://vivasoft-oms-project.onrender.com/health
 
-## Quick Links
+## Quick Links (Animated)
 
 <div align="center">
   <a href="./docker-compose.yml"><img src="./docs/assets/btn-run-stack.svg" alt="Run Docker Stack" width="220" /></a>
@@ -27,34 +27,32 @@ OMS2 is a full-stack demo workspace for project execution tracking, daily update
 
 If your preview engine blocks SVG animation, the buttons remain fully clickable as regular links.
 
-## Demo Snapshot
+## What This Delivers
 
-- Jira-inspired UX shell with role-aware navigation.
-- Seeded projects, tasks, and employees for walkthroughs.
-- Daily updates and compliance-ready data.
-- RAG wiki + KPI endpoints wired into the product flow.
+- Role-aware PMS flows: auth, RBAC, projects, tasks, daily updates.
+- KPI intelligence generated from RAG signals.
+- Wiki memory with semantic search across project work.
+- Demo-ready data seed and walkthrough flow.
 
 ## Quick Start (Docker)
-
-1. From repository root, build and start all services:
 
 ```bash
 docker compose up --build
 ```
 
-2. Open:
+Open:
 
-- Frontend: http://localhost:3000
-- Backend health: http://localhost:8081/health
-- RAG health: http://localhost:8085/health
+- http://localhost:3000
+- http://localhost:8081/health
+- http://localhost:8085/health
 
-3. Seed deterministic demo data (idempotent, safe to re-run):
+Seed demo data (idempotent):
 
 ```powershell
 Get-Content -Raw .\backend\scripts\seed_demo_srs.sql | docker exec -i oms2-postgres psql -U postgres -d oms2
 ```
 
-4. Login credentials (all use password `password`):
+Demo credentials (password: `password`):
 
 - superadmin@oms2.local
 - admin@oms2.local
@@ -66,14 +64,14 @@ Get-Content -Raw .\backend\scripts\seed_demo_srs.sql | docker exec -i oms2-postg
 ```mermaid
 graph LR
   U[Browser User] --> FE[Frontend React Vite Nginx]
-  FE -->|API| BE[Backend API Gin GORM]
-  FE -->|RAG API| RAG[RAG KPI Engine Go]
+  FE -->|/api| BE[Backend API Gin GORM]
+  FE -->|/rag| RAG[RAG KPI Engine Go]
   BE --> DB[(PostgreSQL pgvector)]
   RAG --> DB
   BE -->|Task status events| RAG
 ```
 
-### Request and Data Flow
+## Request and Data Flow
 
 ```mermaid
 sequenceDiagram
@@ -84,30 +82,20 @@ sequenceDiagram
   participant RAG
 
   User->>Frontend: Open Tasks board
-  Frontend->>Backend: Get project tasks by project id
+  Frontend->>Backend: GET project tasks
   Backend->>DB: Query tasks + metadata
   DB-->>Backend: Task rows
   Backend-->>Frontend: JSON response
-  Frontend-->>User: Render Kanban board
 
   User->>Frontend: Mark task as Done
   Frontend->>Backend: Update task status
   Backend->>DB: Update task + status log
-  Backend->>RAG: Send task status changed event
-  RAG->>DB: Mark wiki state stale
+  Backend->>RAG: POST /v1/tasks/status-changed
+  RAG->>DB: Mark wiki stale
   Backend-->>Frontend: Updated task payload
 ```
 
-### Backend Layered Design
-
-```mermaid
-graph TB
-  H[Handler Layer] --> S[Service Layer]
-  S --> R[Repository Layer]
-  R --> M[(PostgreSQL)]
-```
-
-### Core Data Model
+## Core Domains
 
 ```mermaid
 erDiagram
