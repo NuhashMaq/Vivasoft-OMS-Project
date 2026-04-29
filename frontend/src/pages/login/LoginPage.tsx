@@ -10,23 +10,6 @@ export const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [localError, setLocalError] = useState<string>('');
 
-  const demoProjects = [
-    'Northwind Launchpad',
-    'Retail Ops Sprint',
-    'KPI Dashboard Refresh',
-  ];
-
-  const demoTasks = [
-    'Finalize Q2 rollout scope',
-    'Backlog grooming for mobile sync',
-    'QA: timezone + daily updates',
-  ];
-
-  const demoEmployees = [
-    'Nadia Islam — PM',
-    'Rafi Ahmed — Engineer',
-    'Maya Chowdhury — Analyst',
-  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,6 +37,7 @@ export const LoginPage: React.FC = () => {
         <div className="login-card">
           <div className="login-header">
             <h1>Sign in</h1>
+            <p>Use your OMS2 workspace credentials to continue.</p>
           </div>
 
           {displayError && (
@@ -107,32 +91,6 @@ export const LoginPage: React.FC = () => {
             <strong>admin@oms2.local</strong> / <strong>password</strong><br/>
             <strong>demo.employee.01@oms2.local</strong> / <strong>password</strong>
           </p>
-        </div>
-        <div className="demo-panel">
-          <div className="demo-card">
-            <h2>Demo Projects</h2>
-            <ul>
-              {demoProjects.map((project) => (
-                <li key={project}>{project}</li>
-              ))}
-            </ul>
-          </div>
-          <div className="demo-card">
-            <h2>Demo Tasks</h2>
-            <ul>
-              {demoTasks.map((task) => (
-                <li key={task}>{task}</li>
-              ))}
-            </ul>
-          </div>
-          <div className="demo-card">
-            <h2>Demo Employees</h2>
-            <ul>
-              {demoEmployees.map((employee) => (
-                <li key={employee}>{employee}</li>
-              ))}
-            </ul>
-          </div>
         </div>
       </div>
     </div>

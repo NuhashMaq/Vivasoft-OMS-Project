@@ -34,6 +34,11 @@ interface RAGKPIReport {
   };
 }
 
+const buildEmptyKpi = (): KpiData => ({
+  summary: [],
+  charts: [],
+});
+
 export const getKpiData = async (): Promise<KpiData> => {
   try {
     const authUserRaw = localStorage.getItem('auth_user');
@@ -74,7 +79,11 @@ export const getKpiData = async (): Promise<KpiData> => {
     };
   } catch (error: any) {
     console.error('KPI API Error:', error);
-    const message = error?.response?.data?.error || error?.message || 'Failed to fetch KPI data';
-    throw new Error(message);
+    const rawMessage = error?.response?.data?.error || error?.message || 'Failed to fetch KPI data';
+    const normalized = String(rawMessage).toLowerCase();
+    if (normalized.includes('no rows') || normalized.includes('not found')) {
+      return buildEmptyKpi();
+    }
+    throw new Error(rawMessage);
   }
 };

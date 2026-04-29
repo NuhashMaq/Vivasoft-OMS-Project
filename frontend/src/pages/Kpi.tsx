@@ -67,11 +67,11 @@ export const KpiPage: React.FC = () => {
     );
   }
 
-  if (!kpiData) {
+  if (!kpiData || (kpiData.summary?.length ?? 0) === 0) {
     return (
       <div className="kpi-page page-shell">
         <h1 className="page-title">KPI Dashboard</h1>
-        <p className="muted">No KPI data available.</p>
+        <p className="muted">No KPI data available yet. Run KPI computation to generate the first report.</p>
       </div>
     );
   }
