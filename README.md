@@ -1,6 +1,6 @@
 # OMS2 Project Hub
 
-SRS-aligned workspace for execution tracking, daily updates, and RAG-powered intelligence.
+OMS2 is an SRS-aligned workspace for execution tracking, daily updates, KPI reporting, and RAG-assisted knowledge retrieval.
 
 ## Live URLs
 
@@ -8,31 +8,37 @@ SRS-aligned workspace for execution tracking, daily updates, and RAG-powered int
 - Backend health: https://vivasoft-oms-project-1.onrender.com/health
 - RAG health: https://vivasoft-oms-project.onrender.com/health
 
-## Quick Links (Animated)
+## Animated Buttons
 
 <div align="center">
-  <a href="./docker-compose.yml"><img src="./docs/assets/btn-run-stack.svg" alt="Run Docker Stack" width="220" /></a>
-  <a href="#system-architecture"><img src="./docs/assets/btn-architecture.svg" alt="View Architecture" width="220" /></a>
+  <a href="./docker-compose.yml"><img src="./docs/assets/btn-run-stack.svg" alt="Run Docker Stack" width="230" /></a>
+  <a href="#system-architecture"><img src="./docs/assets/btn-architecture.svg" alt="View Architecture" width="230" /></a>
 </div>
 
 <div align="center">
-  <a href="./backend/README.md"><img src="./docs/assets/btn-backend.svg" alt="Open Backend Readme" width="220" /></a>
-  <a href="./frontend/README.md"><img src="./docs/assets/btn-frontend.svg" alt="Open Frontend Readme" width="220" /></a>
+  <a href="./frontend/README.md"><img src="./docs/assets/btn-frontend.svg" alt="Open Frontend Readme" width="230" /></a>
+  <a href="./backend/README.md"><img src="./docs/assets/btn-backend.svg" alt="Open Backend Readme" width="230" /></a>
 </div>
 
 <div align="center">
-  <a href="./rag-kpi-engine/README.md"><img src="./docs/assets/btn-rag.svg" alt="Open RAG Readme" width="220" /></a>
-  <a href="./backend/scripts/seed_demo_srs.sql"><img src="./docs/assets/btn-seed.sql.svg" alt="Open Demo Seed SQL" width="220" /></a>
+  <a href="./rag-kpi-engine/README.md"><img src="./docs/assets/btn-rag.svg" alt="Open RAG Readme" width="230" /></a>
+  <a href="./backend/scripts/seed_demo_srs.sql"><img src="./docs/assets/btn-seed.sql.svg" alt="Open Demo Seed SQL" width="230" /></a>
 </div>
 
 If your preview engine blocks SVG animation, the buttons remain fully clickable as regular links.
 
-## What This Delivers
+## Product Snapshot
 
-- Role-aware PMS flows: auth, RBAC, projects, tasks, daily updates.
-- KPI intelligence generated from RAG signals.
-- Wiki memory with semantic search across project work.
-- Demo-ready data seed and walkthrough flow.
+- Role-aware project management with RBAC and system roles.
+- Task lifecycle tracking with status history and daily updates.
+- KPI intelligence computed from RAG signals and operational data.
+- AI Wiki with semantic search across tasks, updates, and generated knowledge.
+- Demo seed data for walkthrough-ready dashboards.
+
+## Reference Docs
+
+- SRS PDF: [docs/AI_PM_SRS_Final.pdf](docs/AI_PM_SRS_Final.pdf)
+- Team Guidelines: [docs/Guidelines.md](docs/Guidelines.md)
 
 ## Quick Start (Docker)
 
@@ -95,7 +101,7 @@ sequenceDiagram
   Backend-->>Frontend: Updated task payload
 ```
 
-## Core Domains
+## Domain Map
 
 ```mermaid
 erDiagram
@@ -108,3 +114,12 @@ erDiagram
   USERS ||--o{ DAILY_UPDATES : submits
   DAILY_UPDATES ||--o{ DAILY_UPDATE_ITEMS : includes
 ```
+
+## Walkthrough Flow
+
+1. Sign in as `superadmin@oms2.local`.
+2. Review Dashboard KPI strip and project snapshot.
+3. Open Projects -> Project Details -> Tasks board.
+4. Update a task status to trigger RAG wiki stale mark.
+5. Visit AI Wiki and search across project knowledge.
+6. Check KPI screen after computation is available.

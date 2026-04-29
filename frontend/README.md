@@ -6,11 +6,14 @@ React + TypeScript UI for the OMS2 Project Hub.
 
 - https://attachment-project-vivasoft.onrender.com
 
-## Animated Launch Buttons
+## Animated Buttons
 
 <div align="center">
   <a href="https://attachment-project-vivasoft.onrender.com">
-    <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='48' viewBox='0 0 260 48'><defs><linearGradient id='g' x1='0' x2='1'><stop offset='0' stop-color='%232874f0'/><stop offset='1' stop-color='%230ea5a2'/></linearGradient></defs><rect x='1' y='1' width='258' height='46' rx='23' fill='url(%23g)'/><circle cx='24' cy='24' r='6' fill='%23ffffff'><animate attributeName='r' values='6;9;6' dur='2.6s' repeatCount='indefinite'/></circle><text x='72' y='30' font-size='15' fill='%23ffffff' font-family='Arial' font-weight='700'>Open Live App</text></svg>" alt="Open Live App" />
+    <img src="../docs/assets/btn-run-stack.svg" alt="Open Live App" width="220" />
+  </a>
+  <a href="../README.md#system-architecture">
+    <img src="../docs/assets/btn-architecture.svg" alt="Architecture" width="220" />
   </a>
 </div>
 
@@ -22,6 +25,15 @@ graph LR
   FE -->|/api| BE[OMS2 Backend]
   FE -->|/rag| RAG[RAG KPI Engine]
 ```
+
+## UX Surfaces
+
+- Dashboard: KPI strip, portfolio snapshot, daily pulse cards.
+- Projects: metadata, members, and live task board.
+- Tasks: kanban swimlanes, status history, assignee insights.
+- Daily Updates: compliance timeline, notes, and status checks.
+- KPI: AI-assisted score summaries and component breakdown.
+- AI Wiki: grounded search across tasks and updates.
 
 ## Local Development
 
@@ -52,3 +64,8 @@ npm run build
 - superadmin@oms2.local / password
 - admin@oms2.local / password
 - demo.employee.01@oms2.local / password
+
+## Reference Docs
+
+- SRS PDF: [../docs/AI_PM_SRS_Final.pdf](../docs/AI_PM_SRS_Final.pdf)
+- Team Guidelines: [../docs/Guidelines.md](../docs/Guidelines.md)

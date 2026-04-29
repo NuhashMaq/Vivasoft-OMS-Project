@@ -6,6 +6,13 @@ Go service for semantic search, wiki lifecycle, KPI scoring, and governance logs
 
 - Health: https://vivasoft-oms-project.onrender.com/health
 
+## Animated Buttons
+
+<div align="center">
+  <a href="../README.md#system-architecture"><img src="../docs/assets/btn-architecture.svg" alt="Root Architecture" width="220" /></a>
+  <a href="../backend/scripts/seed_demo_srs.sql"><img src="../docs/assets/btn-seed.sql.svg" alt="Seed Demo Data" width="220" /></a>
+</div>
+
 ## Architecture
 
 ```mermaid
@@ -64,3 +71,8 @@ ENABLE_RERANK=true
 ENABLE_SEARCH_CACHE=true
 ENABLE_KPI_INSIGHTS=true
 ```
+
+## Reference Docs
+
+- SRS PDF: [../docs/AI_PM_SRS_Final.pdf](../docs/AI_PM_SRS_Final.pdf)
+- Team Guidelines: [../docs/Guidelines.md](../docs/Guidelines.md)

@@ -6,6 +6,13 @@ Go + Gin API for auth, RBAC, projects, tasks, employees, and daily updates.
 
 - Health: https://vivasoft-oms-project-1.onrender.com/health
 
+## Animated Buttons
+
+<div align="center">
+  <a href="../README.md"><img src="../docs/assets/btn-architecture.svg" alt="Root Architecture" width="220" /></a>
+  <a href="../backend/scripts/seed_demo_srs.sql"><img src="../docs/assets/btn-seed.sql.svg" alt="Seed Demo Data" width="220" /></a>
+</div>
+
 ## Architecture
 
 ```mermaid
@@ -15,6 +22,13 @@ graph TB
   R --> DB[(PostgreSQL)]
   S --> RAG[RAG KPI Engine]
 ```
+
+## Domain Modules
+
+- Auth and sessions with JWT.
+- RBAC for system + project roles.
+- Employees, projects, tasks, and task status history.
+- Daily updates and compliance reporting.
 
 ## Core Routes
 
@@ -62,3 +76,8 @@ docker exec -i oms2-postgres psql -U postgres -d oms2 < backend/scripts/seed_dem
 ```bash
 curl http://localhost:8081/health
 ```
+
+## Reference Docs
+
+- SRS PDF: [../docs/AI_PM_SRS_Final.pdf](../docs/AI_PM_SRS_Final.pdf)
+- Team Guidelines: [../docs/Guidelines.md](../docs/Guidelines.md)
