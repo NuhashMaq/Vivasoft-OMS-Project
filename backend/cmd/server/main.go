@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/industrial-attachment/office-management-backend/internal/bootstrap"
 	"github.com/industrial-attachment/office-management-backend/internal/config"
 	"github.com/industrial-attachment/office-management-backend/internal/handler"
 	"github.com/industrial-attachment/office-management-backend/internal/middleware"
@@ -66,6 +67,12 @@ func main() {
 		log.Println("✓ Default permissions seeded successfully")
 	}
 
+	if err := bootstrap.EnsureDemoUsers(db); err != nil {
+		log.Printf("⚠ Warning: failed to bootstrap demo users: %v", err)
+	} else {
+		log.Println("✓ Demo users ready")
+	}
+
 	// Initialize handlers
 	userHandler := handler.NewUserHandler(userService)
 	authHandler := handler.NewAuthHandler(authService)
@@ -74,6 +81,7 @@ func main() {
 	employeeHandler := handler.NewEmployeeHandler(employeeService)
 	projectHandler := handler.NewProjectHandler(projectService)
 	dailyUpdateHandler := handler.NewDailyUpdateHandler(dailyUpdateService)
+	kpiHandler := handler.NewKpiHandler(db)
 
 	// Initialize Gin router
 	router := gin.Default()
@@ -243,6 +251,11 @@ func main() {
 				dailyUpdates.POST("", dailyUpdateHandler.Upsert)
 				dailyUpdates.GET("", dailyUpdateHandler.ListMine)
 				dailyUpdates.GET("/compliance", dailyUpdateHandler.MyCompliance)
+			}
+
+			kpi := v1Protected.Group("/kpi")
+			{
+				kpi.GET("/report", kpiHandler.GetReport)
 			}
 		}
 	}
