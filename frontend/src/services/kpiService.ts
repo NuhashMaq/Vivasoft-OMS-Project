@@ -1,4 +1,4 @@
-import ragApi from './ragClient';
+import api from '../auth/api';
 
 interface KpiData {
   summary: Array<{
@@ -44,16 +44,13 @@ export const getKpiData = async (): Promise<KpiData> => {
     const authUserRaw = localStorage.getItem('auth_user');
     const authUser = authUserRaw ? JSON.parse(authUserRaw) : null;
     const employeeId = authUser?.id ? String(authUser.id) : '';
-    const role = String(authUser?.role || '').toLowerCase();
 
     if (!employeeId) {
       throw new Error('No authenticated user found. Please login again.');
     }
-    if (role !== 'super_admin') {
-      throw new Error('KPI dashboard requires super_admin access.');
-    }
-
-    const response = await ragApi.get<RAGKPIReport>(`/kpi/report?employee_id=${employeeId}`);
+    const response = await api.get<RAGKPIReport>('/kpi/report', {
+      params: employeeId ? { employee_id: employeeId } : undefined,
+    });
     const report = response.data;
 
     return {
@@ -81,7 +78,7 @@ export const getKpiData = async (): Promise<KpiData> => {
     console.error('KPI API Error:', error);
     const rawMessage = error?.response?.data?.error || error?.message || 'Failed to fetch KPI data';
     const normalized = String(rawMessage).toLowerCase();
-    if (normalized.includes('no rows') || normalized.includes('not found')) {
+    if (normalized.includes('no rows') || normalized.includes('not found') || normalized.includes('employee')) {
       return buildEmptyKpi();
     }
     throw new Error(rawMessage);
