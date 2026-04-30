@@ -77,6 +77,13 @@ func (h *HF) Embed(ctx context.Context, text string) ([]float32, error) {
 		break
 	}
 
+	var hfErr *hfHTTPError
+	if errors.As(lastErr, &hfErr) {
+		if hfErr.status == http.StatusUnauthorized || hfErr.status == http.StatusForbidden {
+			return make([]float32, h.dim), nil
+		}
+	}
+
 	return nil, lastErr
 }
 
