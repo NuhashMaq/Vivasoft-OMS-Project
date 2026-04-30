@@ -44,7 +44,7 @@ func (h *HF) Embed(ctx context.Context, text string) ([]float32, error) {
 		return make([]float32, h.dim), nil
 	}
 
-	url := fmt.Sprintf("https://api-inference.huggingface.co/pipeline/feature-extraction/%s", h.model)
+	url := fmt.Sprintf("https://api-inference.huggingface.co/models/%s", h.model)
 	body, err := json.Marshal(map[string]any{
 		"inputs": text,
 		"options": map[string]any{
