@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -20,6 +21,15 @@ type HF struct {
 	cli   *http.Client
 	dim   int
 	norm  bool
+}
+
+type hfHTTPError struct {
+	status int
+	body   string
+}
+
+func (e *hfHTTPError) Error() string {
+	return fmt.Sprintf("huggingface api error: status=%d body=%s", e.status, e.body)
 }
 
 func NewHF(tok, model string, dim, timeoutSec int, norm bool) *HF {
@@ -44,7 +54,33 @@ func (h *HF) Embed(ctx context.Context, text string) ([]float32, error) {
 		return make([]float32, h.dim), nil
 	}
 
-	url := fmt.Sprintf("https://api-inference.huggingface.co/models/%s", h.model)
+	urls := []string{
+		fmt.Sprintf("https://router.huggingface.co/hf-inference/models/%s", h.model),
+		fmt.Sprintf("https://api-inference.huggingface.co/models/%s", h.model),
+		fmt.Sprintf("https://api-inference.huggingface.co/pipeline/feature-extraction/%s", h.model),
+	}
+
+	var lastErr error
+	for _, url := range urls {
+		vec, err := h.embedWithURL(ctx, url, text)
+		if err == nil {
+			return vec, nil
+		}
+		lastErr = err
+		hfErr := &hfHTTPError{}
+		if errors.As(err, &hfErr) && hfErr.status == http.StatusNotFound {
+			continue
+		}
+		if errors.As(err, &hfErr) && hfErr.status == http.StatusBadRequest {
+			continue
+		}
+		break
+	}
+
+	return nil, lastErr
+}
+
+func (h *HF) embedWithURL(ctx context.Context, url, text string) ([]float32, error) {
 	body, err := json.Marshal(map[string]any{
 		"inputs": text,
 		"options": map[string]any{
@@ -75,7 +111,7 @@ func (h *HF) Embed(ctx context.Context, text string) ([]float32, error) {
 		return nil, err
 	}
 	if resp.StatusCode >= 400 {
-		return nil, fmt.Errorf("huggingface api error: status=%d body=%s", resp.StatusCode, string(raw))
+		return nil, &hfHTTPError{status: resp.StatusCode, body: string(raw)}
 	}
 
 	vec, err := parseVec(raw)
